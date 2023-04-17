@@ -71,6 +71,9 @@ function Update-Paths {
     }
 
     $content = $content -replace $repoRootPattern, $(Get-RepoPath).Replace('\', '/')
+    
+    # replace build folder path
+    $content = $content -replace $buildFolderPattern, $(Join-Path Get-RepoPath -ChildPath build).Replace('\', '/')
 
     # save back to the file
     $content | Out-File -FilePath $filePath -Encoding utf8 -Force

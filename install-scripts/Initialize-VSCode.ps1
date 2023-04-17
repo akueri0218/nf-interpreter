@@ -79,15 +79,15 @@ function Main {
     }
 
     # set/update launch.json
-    . .\Set-VSCode-Launch.ps1
+    . "$PSScriptRoot/Set-VSCode-Launch.ps1"
     Set-VSCode-Launch $force
 
     # set/update tasks.json
-    . .\Set-VSCode-Tasks.ps1
+    . "$PSScriptRoot/Set-VSCode-Tasks.ps1"
     Set-VSCode-Tasks $force
     
     # set/update cmake-variants.json
-    . .\Set-VSCode-CMakes.ps1
+    . "$PSScriptRoot/Set-VSCode-CMakes.ps1"
     Set-VSCode-CMakes $force
 }
 

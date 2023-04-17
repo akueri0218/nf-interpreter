@@ -61,7 +61,7 @@
     {
       "id": "toolsPath",
       "type": "promptString",
-      "default": "C:\nftools",
+      "default": "C:/nftools",
       "description": "Path where to install the tools."
     },
     {
