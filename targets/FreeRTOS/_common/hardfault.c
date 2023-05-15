@@ -3,7 +3,9 @@
 // See LICENSE file in the project root for full license information.
 //
 
+#if defined(CPU_MIMXRT1062CVL5A)
 #include "MIMXRT1062.h"
+#endif
 
 __attribute__((used)) void prvGetRegistersFromStack(unsigned int *pulFaultStackAddress)
 {
@@ -52,12 +54,18 @@ __attribute__((used)) void prvGetRegistersFromStack(unsigned int *pulFaultStackA
 
 __attribute__((naked, aligned(4))) void HardFault_Handler(void)
 {
-    __asm volatile(" tst lr, #4                                                \n"
+#if defined(CPU_MIMXRT1062CVL5A)
+    __asm volatile(
+                   " tst lr, #4                                                \n"
                    " ite eq                                                    \n"
                    " mrseq r0, msp                                             \n"
                    " mrsne r0, psp                                             \n"
                    " ldr r1, [r0, #24]                                         \n"
                    " ldr r2, handler2_address_const                            \n"
                    " bx r2                                                     \n"
-                   " handler2_address_const: .word prvGetRegistersFromStack    \n");
+                   " handler2_address_const: .word prvGetRegistersFromStack    \n"                  ""
+    );
+#elif defined(CPU_K210)
+
+#endif
 }
