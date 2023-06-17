@@ -5,14 +5,14 @@
 //
 
 /* CMSIS-style register definitions */
-#include "MIMXRT1062.h"
 
 #include <nanoHAL_v2.h>
 #include <WireProtocol.h>
 #include <Debugger.h>
 #include <WireProtocol_MonitorCommands.h>
 #include <target_board.h>
-#include <Target_BlockStorage_iMXRTFlashDriver.h>
+
+#include "w25qxx.h"
 
 #define FLASH_ERASED_WORD 0xFFFFFFFF
 
@@ -25,11 +25,11 @@ int AccessMemory(uint32_t location, uint32_t lengthInBytes, uint8_t *buffer, int
     {
         case AccessMemory_Write:
             // use FLASH driver to perform write operation
-            return iMXRTFlexSPIDriver_Write(NULL, location, lengthInBytes, buffer, false);
+            return (int)w25qxx_write_data(location, buffer, lengthInBytes);
 
         case AccessMemory_Erase:
             // erase using FLASH driver
-            return iMXRTFlexSPIDriver_EraseBlock(NULL, location);
+            return (int)w25qxx_sector_erase(location);
 
         case AccessMemory_Check:
             // compute CRC32 of the memory segment

@@ -157,6 +157,25 @@ if(IS_DIRECTORY ${CMAKE_SOURCE_DIR}/targets/FreeRTOS/NXP/${TARGET_BOARD})
     # add TARGET board directory
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/NXP/${TARGET_BOARD})
 
+#################### MAIXDUINO ####################
+# try to find Maixduino in the target folder
+elseif(IS_DIRECTORY ${CMAKE_SOURCE_DIR}/targets/FreeRTOS/Sipeed/${TARGET_BOARD})
+
+    # board found
+    message(STATUS "Support for target board '${TARGET_BOARD}' found")
+
+    # Define base path for the class libraries
+    nf_set_base_path_for_libraries_modules(${CMAKE_SOURCE_DIR}/targets/FreeRTOS/Sipeed/_nanoCLR)
+
+    # set target base location
+    set(TARGET_BASE_LOCATION ${CMAKE_SOURCE_DIR}/targets/FreeRTOS/Sipeed/${TARGET_BOARD})
+
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/Sipeed)
+
+    # add TARGET board directory
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/Sipeed/${TARGET_BOARD})
+#################### MAIXDUINO ####################
+
 # try to find board in the targets folder
 elseif(IS_DIRECTORY ${CMAKE_SOURCE_DIR}/targets/FreeRTOS/ST/${TARGET_BOARD})
 

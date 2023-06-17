@@ -45,18 +45,18 @@
           "NF_FEATURE_HAS_CONFIG_BLOCK": "ON",
           "API_Windows.Devices.Gpio": "ON",
           "API_System.Device.Gpio": "ON",
-          "API_Windows.Devices.Spi": "ON",
+          "API_Windows.Devices.Spi": "OFF", // TODO ON
           "API_Windows.Devices.I2c": "ON",
           "API_System.Device.I2c": "ON",
-          "API_Windows.Devices.Adc": "ON",
-          "API_System.Device.Adc": "ON",
-          "API_Windows.Devices.Pwm": "ON",
-          "API_System.Device.WiFi": "OFF",
+          "API_Windows.Devices.Adc": "OFF", // TODO ON
+          "API_System.Device.Adc": "OFF", // TODO ON
+          "API_Windows.Devices.Pwm": "OFF", // TODO ON?
+          "API_System.Device.WiFi": "OFF", // TODO ON
           "API_Windows.Devices.SerialCommunication": "ON",
           "API_System.IO.Ports": "ON",
           "API_nanoFramework.ResourceManager": "ON",
           "API_nanoFramework.System.Collections": "ON",
-          "API_System.Net": "OFF", //TODO: ON
+          "API_System.Net": "ON", //TODO: ON
           "API_System.Math": "ON"
         }
       }

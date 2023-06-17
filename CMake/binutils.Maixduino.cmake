@@ -94,7 +94,7 @@ macro(nf_add_platform_dependencies target)
             EXTRA_INCLUDES
                 ${CMSIS_INCLUDE_DIRS}
                 ${FreeRTOS_INCLUDE_DIRS}
-                ${TARGET_NXP_COMMON_INCLUDE_DIRS}
+                ${TARGET_MAIXDUINO_COMMON_INCLUDE_DIRS}
                 ${TARGET_FREERTOS_COMMON_INCLUDE_DIRS}
                 ${TARGET_FREERTOS_NANOCLR_INCLUDE_DIRS})
 
@@ -104,7 +104,7 @@ macro(nf_add_platform_dependencies target)
             EXTRA_INCLUDES
                 ${CMSIS_INCLUDE_DIRS}
                 ${FreeRTOS_INCLUDE_DIRS}
-                ${TARGET_NXP_COMMON_INCLUDE_DIRS}
+                ${TARGET_MAIXDUINO_COMMON_INCLUDE_DIRS}
                 ${TARGET_FREERTOS_COMMON_INCLUDE_DIRS}
                 ${TARGET_FREERTOS_NANOCLR_INCLUDE_DIRS})
         
@@ -116,7 +116,7 @@ macro(nf_add_platform_dependencies target)
                 EXTRA_INCLUDES
                     ${CMSIS_INCLUDE_DIRS}
                     ${FreeRTOS_INCLUDE_DIRS}
-                    ${TARGET_NXP_COMMON_INCLUDE_DIRS}
+                    ${TARGET_MAIXDUINO_COMMON_INCLUDE_DIRS}
                     ${TARGET_FREERTOS_COMMON_INCLUDE_DIRS}
                     ${TARGET_FREERTOS_NANOCLR_INCLUDE_DIRS})
             
@@ -129,13 +129,13 @@ macro(nf_add_platform_dependencies target)
                 ${CMSIS_INCLUDE_DIRS}
                 ${FreeRTOS_INCLUDE_DIRS}
                 ${LWIP_INCLUDE_DIRS}
-                ${TARGET_NXP_COMMON_INCLUDE_DIRS}
-                ${TARGET_NXP_NANOCLR_INCLUDE_DIRS}
+                ${TARGET_MAIXDUINO_COMMON_INCLUDE_DIRS}
+                ${TARGET_MAIXDUINO_NANOCLR_INCLUDE_DIRS}
                 ${TARGET_FREERTOS_COMMON_INCLUDE_DIRS}
                 ${TARGET_FREERTOS_NANOCLR_INCLUDE_DIRS}
                 ${FATFS_INCLUDE_DIRS}
                 ${CMAKE_CURRENT_BINARY_DIR}
-                ${CMAKE_SOURCE_DIR}/targets/FreeRTOS/NXP/_fatfs
+                ${CMAKE_SOURCE_DIR}/targets/FreeRTOS/MAIXDUINO/_fatfs
                 ${CMAKE_BINARY_DIR}/targets/${RTOS}/${TARGET_BOARD})
         
         add_dependencies(${target}.elf nano::NF_NativeAssemblies)
@@ -149,7 +149,7 @@ macro(nf_add_platform_dependencies target)
                     ${LWIP_SOURCES}
                 EXTRA_INCLUDES 
                     ${FreeRTOS_INCLUDE_DIRS}
-                    ${TARGET_NXP_COMMON_INCLUDE_DIRS}
+                    ${TARGET_MAIXDUINO_COMMON_INCLUDE_DIRS}
                     ${TARGET_FREERTOS_COMMON_INCLUDE_DIRS}
                     ${LWIP_INCLUDE_DIRS}
                     ${CMSIS_INCLUDE_DIRS})
@@ -169,7 +169,7 @@ macro(nf_add_platform_include_directories target)
     target_include_directories(${target}.elf PUBLIC
 
         ${TARGET_FREERTOS_COMMON_INCLUDE_DIRS}
-        ${TARGET_NXP_COMMON_INCLUDE_DIRS}
+        ${TARGET_MAIXDUINO_COMMON_INCLUDE_DIRS}
         ${FreeRTOS_INCLUDE_DIRS}
         ${CMSIS_INCLUDE_DIRS}
     )
@@ -179,7 +179,7 @@ macro(nf_add_platform_include_directories target)
 
         target_include_directories(${target}.elf PUBLIC
             
-            ${TARGET_NXP_NANOBOOTER_INCLUDE_DIRS}
+            ${TARGET_MAIXDUINO_NANOBOOTER_INCLUDE_DIRS}
             ${TARGET_FREERTOS_NANOBOOTER_INCLUDE_DIRS}
         )
 
@@ -190,7 +190,7 @@ macro(nf_add_platform_include_directories target)
 
         target_include_directories(${target}.elf PUBLIC
 
-            ${TARGET_NXP_NANOCLR_INCLUDE_DIRS}
+            ${TARGET_MAIXDUINO_NANOCLR_INCLUDE_DIRS}
             ${NANOCLR_PROJECT_INCLUDE_DIRS}
             ${TARGET_FREERTOS_NANOCLR_INCLUDE_DIRS}
             ${LWIP_INCLUDE_DIRS}
@@ -215,7 +215,7 @@ macro(nf_add_platform_sources target)
     target_sources(${target}.elf PUBLIC
     
         ${TARGET_FREERTOS_COMMON_SOURCES}
-        ${TARGET_NXP_COMMON_SOURCES}
+        ${TARGET_MAIXDUINO_COMMON_SOURCES}
         
         ${FreeRTOS_SOURCES}
     )
@@ -228,7 +228,7 @@ macro(nf_add_platform_sources target)
                        ${CMAKE_BINARY_DIR}/targets/${RTOS}/${TARGET_BOARD}/nanoBooter/target_board.h @ONLY)
 
         target_sources(${target}.elf PUBLIC
-            ${TARGET_NXP_NANOBOOTER_SOURCES}
+            ${TARGET_MAIXDUINO_NANOBOOTER_SOURCES}
         )
 
     endif()
@@ -243,8 +243,8 @@ macro(nf_add_platform_sources target)
         target_sources(${target}.elf PUBLIC
             ${TARGET_FREERTOS_COMMON_SOURCES}
             ${TARGET_FREERTOS_NANOCLR_SOURCES}
-            ${TARGET_NXP_COMMON_SOURCES}
-            ${TARGET_NXP_NANOCLR_SOURCES}
+            ${TARGET_MAIXDUINO_COMMON_SOURCES}
+            ${TARGET_MAIXDUINO_NANOCLR_SOURCES}
             ${FATFS_SOURCES}
         )
 

@@ -15,6 +15,8 @@ set(FATFS_SRCS
     # fatfs
     ff.c
     ffunicode.c
+
+    ffsystem.c # added for maixduino
 )
 
 foreach(SRC_FILE ${FATFS_SRCS})

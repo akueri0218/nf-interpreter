@@ -10,10 +10,10 @@ nf_setup_target_build(
     HAS_NANOBOOTER
 
     BOOTER_LINKER_FILE 
-        MIMXRT10xx
+        kendryte-k210
 
     CLR_LINKER_FILE 
-        MIMXRT10xx
+        kendryte-k210
 
     BOOTER_EXTRA_COMPILE_DEFINITIONS
         -DCPU_K210

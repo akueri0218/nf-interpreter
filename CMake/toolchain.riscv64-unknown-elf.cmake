@@ -47,8 +47,8 @@ find_program(
    riscv64-unknown-elf-size
    CMAKE_FIND_ROOT_PATH_BOTH)
 
-set(CMAKE_C_FLAGS "-mlongcalls -Wno-frame-address" CACHE STRING "C Compiler Base Flags")
-set(CMAKE_CXX_FLAGS "-mlongcalls -Wno-frame-address" CACHE STRING "C++ Compiler Base Flags")
+set(CMAKE_C_FLAGS "-Wno-frame-address" CACHE STRING "C Compiler Base Flags")
+set(CMAKE_CXX_FLAGS "-Wno-frame-address" CACHE STRING "C++ Compiler Base Flags")
 
 # root paths to search on the filesystem for cross-compiling
 get_filename_component(CMAKE_FIND_ROOT_PATH ${CMAKE_C_COMPILER} DIRECTORY CACHE)

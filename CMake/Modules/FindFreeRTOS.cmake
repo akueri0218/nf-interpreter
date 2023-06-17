@@ -12,7 +12,7 @@ FetchContent_GetProperties(freertos)
 
 # check if the series name is supported 
 
-set(FreeRTOS_SUPPORTED_SERIES IMXRT10xx CACHE INTERNAL "supported series names for FreeRTOS")
+set(FreeRTOS_SUPPORTED_SERIES IMXRT10xx Maix_M1 CACHE INTERNAL "supported series names for FreeRTOS")
 
 list(FIND FreeRTOS_SUPPORTED_SERIES ${TARGET_SERIES} TARGET_SERIES_NAME_INDEX)
 
@@ -66,7 +66,6 @@ foreach(SRC_FILE ${FreeRTOS_SRCS})
     list(APPEND FreeRTOS_SOURCES ${FreeRTOS_SRC_FILE})
 
 endforeach()
-
 
 include(FindPackageHandleStandardArgs)
 
