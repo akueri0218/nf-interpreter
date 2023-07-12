@@ -1,5 +1,7 @@
 #project(freertos)
 
+message("-- * freertos")
+
 # create freertos library
 FILE(GLOB_RECURSE LIB_SRC_NOASM
         "${CMAKE_CURRENT_LIST_DIR}/*.cpp"
@@ -22,3 +24,5 @@ SET_TARGET_PROPERTIES(freertos PROPERTIES LINKER_LANGUAGE C)
 TARGET_LINK_LIBRARIES(freertos PRIVATE hal PRIVATE fatfs PRIVATE lwipcore)
 
 TARGET_INCLUDE_DIRECTORIES(freertos PUBLIC ${LIB_INC})
+
+SET(MAIXDUINO_FREERTOS_DIR ${CMAKE_CURRENT_LIST_DIR} CACHE INTERNAL "make global")

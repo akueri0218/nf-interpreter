@@ -6,6 +6,8 @@
 include(FetchContent)
 include(binutils.common)
 
+# definitions in macros
+add_definitions(-DCONFIG_LOG_LEVEL=LOG_INFO -DCONFIG_LOG_ENABLE -DCONFIG_LOG_COLORS -DLOG_KERNEL -D__riscv64)
 
 # check if FATFS_SOURCE was specified or if it's empty (default is empty)
 set(NO_FATFS_SOURCE TRUE)

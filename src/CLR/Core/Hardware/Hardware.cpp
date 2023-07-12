@@ -109,7 +109,7 @@ void CLR_HW_Hardware::ProcessActivity()
     {
         // dbg.ProcessCommands();
 
-#if defined(PLATFORM_ARM) || defined(PLATFORM_ESP32)
+#if defined(PLATFORM_ARM) || defined(PLATFORM_ESP32) || defined(PLATFORM_RISCV)
         if (CLR_EE_DBG_IS(RebootPending))
         {
 #if !defined(BUILD_RTM)

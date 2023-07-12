@@ -208,7 +208,7 @@ enum POWER_LEVEL
 
 //#include <nanocrt_decl.h>
 
-#if defined(PLATFORM_ARM) || defined(PLATFORM_ESP32)
+#if defined(PLATFORM_ARM) || defined(PLATFORM_ESP32) || defined(PLATFORM_RISCV)
 
 #define strcpy    DoNotUse_*strcpy  []
 #define strncpy   DoNotUse_*strcpy  []

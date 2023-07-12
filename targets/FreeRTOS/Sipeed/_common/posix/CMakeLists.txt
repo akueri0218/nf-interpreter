@@ -1,5 +1,7 @@
 #project(bsp)
 
+message("-- * posix")
+
 # create bsp library
 FILE(GLOB_RECURSE LIB_SRC_NOASM
         "${CMAKE_CURRENT_LIST_DIR}/*.cpp"

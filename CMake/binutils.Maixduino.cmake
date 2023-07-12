@@ -220,6 +220,13 @@ macro(nf_add_platform_sources target)
         ${FreeRTOS_SOURCES}
     )
 
+    # link kendryte-freertos-sdk
+    target_link_libraries(${target}.elf PUBLIC
+        -Wl,--start-group
+        m freertos atomic bsp c stdc++ drivers posix
+        -Wl,--end-group
+    )
+
     # sources specific to nanoBooter
     if(${target} STREQUAL ${NANOBOOTER_PROJECT_NAME})
 

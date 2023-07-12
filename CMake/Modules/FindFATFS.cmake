@@ -15,9 +15,11 @@ set(FATFS_SRCS
     # fatfs
     ff.c
     ffunicode.c
-
-    ffsystem.c # added for maixduino
 )
+
+if(${TARGET_BOARD} MATCHES "Maixduino")
+    list(APPEND FATFS_SRCS ffsystem.c)
+endif()
 
 foreach(SRC_FILE ${FATFS_SRCS})
 

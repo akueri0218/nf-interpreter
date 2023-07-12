@@ -5,17 +5,12 @@ Pre-configured cmake-variants.json for this board
 ```
 {
   "buildType": {
-    "default": "MinSizeRel",
+    "default": "debug",
     "choices": {
       "debug": {
         "short": "Debug",
         "long": "Emit debug information without performing optimizations",
         "buildType": "Debug"
-      },
-      "release": {
-        "short": "Release",
-        "long": "Enable optimizations, omit debug info",
-        "buildType": "Release"
       },
       "minsize": {
         "short": "MinSizeRel",
@@ -32,32 +27,42 @@ Pre-configured cmake-variants.json for this board
   "linkage": {
     "default": "",
     "choices": {
-      "MIMXRT1060_EVK": {
-        "short": "MIMXRT1060_EVK",
+      "Maixduino": {
+        "short": "Maixduino",
         "settings": {
           "BUILD_VERSION": "0.9.99.999",
-          "TOOLCHAIN_PREFIX": "C:/nanoFramework_Tools/GNU_ARM_Toolchain/7 2018-q2-update",
-          "TARGET_SERIES": "IMXRT10xx",
+          "BUILD_VERBOSE": "OFF",
+          "CMAKE_TOOLCHAIN_FILE": "CMake/toolchain.riscv64-unknown-elf.cmake",
+          "TOOLCHAIN_PREFIX": "<absolute-path-to-riscv-toolchain-folder-mind-the-forward-slashes>",
+          "TOOL_SRECORD_PREFIX": "<absolute-path-to-srecord-folder-mind-the-forward-slashes>",
+          "TARGET_SERIES": "Maix_M1",
+          "SUPPORT_ANY_BASE_CONVERSION": "ON",
           "RTOS": "FreeRTOS",
-          "TARGET_BOARD": "NXP_MIMXRT1060_EVK",
-          "RTOS_VERSION": "v1.4.8",
-          "CMSIS_VERSION": "5.4.0",
-          "FATFS_VERSION": "R0.13c",
+          "TARGET_BOARD": "Maixduino",
+          "RTOS_VERSION": "",
+          "CMSIS_VERSION": "",
+          "FATFS_VERSION": "",
+          "LWIP_VERSION": "",
           "NF_BUILD_RTM": "OFF",
           "NF_FEATURE_DEBUGGER": "ON",
-          "NF_FEATURE_HAS_SDCARD": "ON",
-          "NF_FEATURE_RTC": "OFF",
-          "NF_SECURITY_OPENSSL": "OFF",
+          "NF_FEATURE_HAS_SDCARD": "OFF", "TODO1": "ON",
+          "NF_FEATURE_RTC": "ON",
+          "NF_FEATURE_HAS_CONFIG_BLOCK": "ON",
           "API_Windows.Devices.Gpio": "ON",
-          "API_Windows.Devices.Spi": "OFF",
-          "API_Windows.Devices.I2c": "OFF",
-          "API_Windows.Devices.Adc": "OFF",
-          "API_System.Device.Adc": "OFF",
-          "API_Windows.Devices.Pwm": "OFF",
-          "API_System.Device.WiFi": "OFF",
-          "API_System.Net": "OFF",
-          "API_System.Math": "ON",
-          "API_Windows.Storage": "ON"
+          "API_System.Device.Gpio": "ON",
+          "API_Windows.Devices.Spi": "OFF", "TODO2": "ON",
+          "API_Windows.Devices.I2c": "ON",
+          "API_System.Device.I2c": "ON",
+          "API_Windows.Devices.Adc": "OFF", "TODO3": "ON",
+          "API_System.Device.Adc": "OFF", "TODO4": "ON",
+          "API_Windows.Devices.Pwm": "OFF", "TODO5": "ON?",
+          "API_System.Device.WiFi": "OFF", "TODO6": "ON",
+          "API_Windows.Devices.SerialCommunication": "ON",
+          "API_System.IO.Ports": "ON",
+          "API_nanoFramework.ResourceManager": "ON",
+          "API_nanoFramework.System.Collections": "ON",
+          "API_System.Net": "ON", "TODO7": "ON",
+          "API_System.Math": "ON"
         }
       }
     }

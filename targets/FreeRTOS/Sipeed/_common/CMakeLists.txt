@@ -3,19 +3,36 @@
 # See LICENSE file in the project root for full license information.
 #
 
+message("-- ### Maixduino sources ###")
+
+
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/arch/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/utils/include)
+
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/fatfs)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/lwip)
+
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/hal)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/freertos)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/bsp)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/drivers)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/freertos)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/hal)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/posix)
 
+list(APPEND TARGET_MAIXDUINO_COMMON_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include)
+list(APPEND TARGET_MAIXDUINO_COMMON_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/arch/include)
+list(APPEND TARGET_MAIXDUINO_COMMON_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/utils/include)
+list(APPEND TARGET_MAIXDUINO_COMMON_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/hal/include)
+list(APPEND TARGET_MAIXDUINO_COMMON_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/freertos/include)
 
-list(APPEND TARGET_MAIXDUINO_COMMON_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/WireProtocol_HAL_Interface.c)
+# list(APPEND TARGET_MAIXDUINO_COMMON_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/WireProtocol_HAL_Interface.c)
 
 # append Target files
-list(APPEND TARGET_MAIXDUINO_COMMON_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/Device_BlockStorage.c)
-list(APPEND TARGET_MAIXDUINO_COMMON_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/Target_BlockStorage_iMXRTFlashDriver.c)
-list(APPEND TARGET_MAIXDUINO_COMMON_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/platform_BlockStorage.c)
+# list(APPEND TARGET_MAIXDUINO_COMMON_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/Device_BlockStorage.c)
+# list(APPEND TARGET_MAIXDUINO_COMMON_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/Target_BlockStorage_iMXRTFlashDriver.c)
+# list(APPEND TARGET_MAIXDUINO_COMMON_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/platform_BlockStorage.c)
+
+list(APPEND TARGET_MAIXDUINO_COMMON_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/w25qxx.c)
 
 # include configuration manager file, if feature is enabled
 if(NF_FEATURE_HAS_CONFIG_BLOCK)
@@ -25,3 +42,5 @@ endif()
 # make var global
 set(TARGET_MAIXDUINO_COMMON_SOURCES ${TARGET_MAIXDUINO_COMMON_SOURCES} CACHE INTERNAL "make global")
 set(TARGET_MAIXDUINO_COMMON_INCLUDE_DIRS ${TARGET_MAIXDUINO_COMMON_INCLUDE_DIRS} CACHE INTERNAL "make global")
+
+message("-- #########################")

@@ -40,23 +40,23 @@
           "LWIP_VERSION": "",
           "NF_BUILD_RTM": "OFF",
           "NF_FEATURE_DEBUGGER": "ON",
-          "NF_FEATURE_HAS_SDCARD": "OFF", // TODO: ON
+          "NF_FEATURE_HAS_SDCARD": "OFF", "TODO1": "ON",
           "NF_FEATURE_RTC": "ON",
           "NF_FEATURE_HAS_CONFIG_BLOCK": "ON",
           "API_Windows.Devices.Gpio": "ON",
           "API_System.Device.Gpio": "ON",
-          "API_Windows.Devices.Spi": "OFF", // TODO ON
+          "API_Windows.Devices.Spi": "OFF", "TODO2": "ON",
           "API_Windows.Devices.I2c": "ON",
           "API_System.Device.I2c": "ON",
-          "API_Windows.Devices.Adc": "OFF", // TODO ON
-          "API_System.Device.Adc": "OFF", // TODO ON
-          "API_Windows.Devices.Pwm": "OFF", // TODO ON?
-          "API_System.Device.WiFi": "OFF", // TODO ON
+          "API_Windows.Devices.Adc": "OFF", "TODO3": "ON",
+          "API_System.Device.Adc": "OFF", "TODO4": "ON",
+          "API_Windows.Devices.Pwm": "OFF", "TODO5": "ON?",
+          "API_System.Device.WiFi": "OFF", "TODO6": "ON",
           "API_Windows.Devices.SerialCommunication": "ON",
           "API_System.IO.Ports": "ON",
           "API_nanoFramework.ResourceManager": "ON",
           "API_nanoFramework.System.Collections": "ON",
-          "API_System.Net": "ON", //TODO: ON
+          "API_System.Net": "ON", "TODO7": "ON",
           "API_System.Math": "ON"
         }
       }

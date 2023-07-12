@@ -7,12 +7,8 @@
 # WHEN ADDING A NEW SERIES add the appropriate GCC options bellow
 #################################################################
 
-# need to specify this for assembler
-set(CMAKE_ASM_FLAGS "-march=rv64imafc -x assembler-with-cpp" CACHE INTERNAL "asm compiler flags")
-
 # need to specify linker flags here
 set(CMAKE_EXE_LINKER_FLAGS "-nostartfiles -static -Wl,--gc-sections -Wl,-static -Wl,--start-group -Wl,--whole-archive -Wl,--no-whole-archive -Wl,--end-group -Wl,-EL" CACHE INTERNAL "executable linker flags")
-# TODO: -T kendryte.ld の追加（いらないかも？）
 
 # TARGET parameter to set the target that's setting them for
 # optional EXTRA_COMPILE_OPTIONS with compile options to be added
@@ -28,10 +24,10 @@ macro(nf_set_compile_options)
 
     # include any extra options comming from any extra args?
     # TODO: removed -Wundef until fix with FatFS is merged (https://github.com/abbrev/fatfs/pull/8)
-    target_compile_options(${NFSCO_TARGET} PUBLIC  ${NFSCO__EXTRA_COMPILE_OPTIONS} -mthumb -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mabi=aapcs -nostdlib -Wall -Wextra -Werror -ffunction-sections -fshort-wchar -falign-functions=16 -fdata-sections -fno-builtin -fno-common -fomit-frame-pointer -mlong-calls -fdollars-in-identifiers -fno-exceptions -fno-unroll-loops -frounding-math -fsignaling-nans -ffloat-store -fno-math-errno -ftree-vectorize -fcheck-new )
+    target_compile_options(${NFSCO_TARGET} PUBLIC  ${NFSCO__EXTRA_COMPILE_OPTIONS} -mcmodel=medany -mabi=lp64f -march=rv64imafc -fno-common -ffunction-sections -fdata-sections -fstrict-volatile-bitfields -ffast-math -fno-math-errno -fsingle-precision-constant -O2 -ggdb -std=gnu11 -Wall -Werror=all -Wno-error=unused-function -Wno-error=unused-but-set-variable -Wno-error=unused-variable -Wno-error=deprecated-declarations -Wno-error=maybe-uninitialized -Wextra -Werror=frame-larger-than=65536 -Wno-unused-parameter -Wno-unused-function -Wno-implicit-fallthrough -Wno-sign-compare -Wno-error=missing-braces -Wno-old-style-declaration )
 
-    # this series has FPU 
-    target_compile_definitions(${NFSCO_TARGET} PUBLIC -DPLATFORM_ARM -DCORTEX_USE_FPU=TRUE -DUSE_FPU=TRUE) 
+    # define riscv64
+    target_compile_definitions(${NFSCO_TARGET} PUBLIC -DPLATFORM_RISCV -D__riscv64) 
 
 endmacro()
 

@@ -89,30 +89,86 @@ macro(nf_add_platform_dependencies target)
 
     # dependencies specific to nanoCLR
     if("${target}" STREQUAL "${NANOCLR_PROJECT_NAME}")
+        if(${TARGET_BOARD} MATCHES "Maixduino")
+            nf_add_lib_coreclr(
+                EXTRA_INCLUDES
+                    ${CMSIS_INCLUDE_DIRS}
+                    ${FreeRTOS_INCLUDE_DIRS}
+                    ${TARGET_MAIXDUINO_COMMON_INCLUDE_DIRS}
+                    ${TARGET_FREERTOS_COMMON_INCLUDE_DIRS}
+                    ${TARGET_FREERTOS_NANOCLR_INCLUDE_DIRS})
 
-        nf_add_lib_coreclr(
-            EXTRA_INCLUDES
-                ${CMSIS_INCLUDE_DIRS}
-                ${FreeRTOS_INCLUDE_DIRS}
-                ${TARGET_NXP_COMMON_INCLUDE_DIRS}
-                ${TARGET_FREERTOS_COMMON_INCLUDE_DIRS}
-                ${TARGET_FREERTOS_NANOCLR_INCLUDE_DIRS})
-
-        add_dependencies(${target}.elf nano::NF_CoreCLR)
-       
-        nf_add_lib_wireprotocol(
-            EXTRA_INCLUDES
-                ${CMSIS_INCLUDE_DIRS}
-                ${FreeRTOS_INCLUDE_DIRS}
-                ${TARGET_NXP_COMMON_INCLUDE_DIRS}
-                ${TARGET_FREERTOS_COMMON_INCLUDE_DIRS}
-                ${TARGET_FREERTOS_NANOCLR_INCLUDE_DIRS})
+            add_dependencies(${target}.elf nano::NF_CoreCLR)
         
-        add_dependencies(${target}.elf nano::WireProtocol)
+            nf_add_lib_wireprotocol(
+                EXTRA_INCLUDES
+                    ${CMSIS_INCLUDE_DIRS}
+                    ${FreeRTOS_INCLUDE_DIRS}
+                    ${TARGET_MAIXDUINO_COMMON_INCLUDE_DIRS}
+                    ${TARGET_FREERTOS_COMMON_INCLUDE_DIRS}
+                    ${TARGET_FREERTOS_NANOCLR_INCLUDE_DIRS})
+            
+            add_dependencies(${target}.elf nano::WireProtocol)
 
-        if(NF_FEATURE_DEBUGGER)
+            if(NF_FEATURE_DEBUGGER)
 
-            nf_add_lib_debugger(
+                nf_add_lib_debugger(
+                    EXTRA_INCLUDES
+                        ${CMSIS_INCLUDE_DIRS}
+                        ${FreeRTOS_INCLUDE_DIRS}
+                        ${TARGET_MAIXDUINO_COMMON_INCLUDE_DIRS}
+                        ${TARGET_FREERTOS_COMMON_INCLUDE_DIRS}
+                        ${TARGET_FREERTOS_NANOCLR_INCLUDE_DIRS})
+                
+                add_dependencies(${target}.elf nano::NF_Debugger)
+
+            endif()
+
+            nf_add_lib_native_assemblies(
+                EXTRA_INCLUDES
+                    ${CMSIS_INCLUDE_DIRS}
+                    ${FreeRTOS_INCLUDE_DIRS}
+                    ${LWIP_INCLUDE_DIRS}
+                    ${TARGET_MAIXDUINO_COMMON_INCLUDE_DIRS}
+                    ${TARGET_MAIXDUINO_NANOCLR_INCLUDE_DIRS}
+                    ${TARGET_FREERTOS_COMMON_INCLUDE_DIRS}
+                    ${TARGET_FREERTOS_NANOCLR_INCLUDE_DIRS}
+                    ${FATFS_INCLUDE_DIRS}
+                    ${CMAKE_CURRENT_BINARY_DIR}
+                    ${CMAKE_SOURCE_DIR}/targets/FreeRTOS/Sipeed/_fatfs # 正しいのわからん
+                    ${CMAKE_BINARY_DIR}/targets/${RTOS}/${TARGET_BOARD})
+            
+            add_dependencies(${target}.elf nano::NF_NativeAssemblies)
+
+            if(USE_NETWORKING_OPTION)
+
+                nf_add_lib_network(
+                    BUILD_TARGET
+                        ${target}
+                    EXTRA_SOURCES 
+                        ${LWIP_SOURCES}
+                    EXTRA_INCLUDES 
+                        ${FreeRTOS_INCLUDE_DIRS}
+                        ${TARGET_MAIXDUINO_COMMON_INCLUDE_DIRS}
+                        ${TARGET_FREERTOS_COMMON_INCLUDE_DIRS}
+                        ${LWIP_INCLUDE_DIRS}
+                        ${CMSIS_INCLUDE_DIRS})
+
+                add_dependencies(${target}.elf nano::NF_Network)
+
+            endif()
+        else()
+            nf_add_lib_coreclr(
+                EXTRA_INCLUDES
+                    ${CMSIS_INCLUDE_DIRS}
+                    ${FreeRTOS_INCLUDE_DIRS}
+                    ${TARGET_NXP_COMMON_INCLUDE_DIRS}
+                    ${TARGET_FREERTOS_COMMON_INCLUDE_DIRS}
+                    ${TARGET_FREERTOS_NANOCLR_INCLUDE_DIRS})
+
+            add_dependencies(${target}.elf nano::NF_CoreCLR)
+        
+            nf_add_lib_wireprotocol(
                 EXTRA_INCLUDES
                     ${CMSIS_INCLUDE_DIRS}
                     ${FreeRTOS_INCLUDE_DIRS}
@@ -120,86 +176,131 @@ macro(nf_add_platform_dependencies target)
                     ${TARGET_FREERTOS_COMMON_INCLUDE_DIRS}
                     ${TARGET_FREERTOS_NANOCLR_INCLUDE_DIRS})
             
-            add_dependencies(${target}.elf nano::NF_Debugger)
+            add_dependencies(${target}.elf nano::WireProtocol)
 
-        endif()
+            if(NF_FEATURE_DEBUGGER)
 
-        nf_add_lib_native_assemblies(
-            EXTRA_INCLUDES
-                ${CMSIS_INCLUDE_DIRS}
-                ${FreeRTOS_INCLUDE_DIRS}
-                ${LWIP_INCLUDE_DIRS}
-                ${TARGET_NXP_COMMON_INCLUDE_DIRS}
-                ${TARGET_NXP_NANOCLR_INCLUDE_DIRS}
-                ${TARGET_FREERTOS_COMMON_INCLUDE_DIRS}
-                ${TARGET_FREERTOS_NANOCLR_INCLUDE_DIRS}
-                ${FATFS_INCLUDE_DIRS}
-                ${CMAKE_CURRENT_BINARY_DIR}
-                ${CMAKE_SOURCE_DIR}/targets/FreeRTOS/NXP/_fatfs
-                ${CMAKE_BINARY_DIR}/targets/${RTOS}/${TARGET_BOARD})
-        
-        add_dependencies(${target}.elf nano::NF_NativeAssemblies)
+                nf_add_lib_debugger(
+                    EXTRA_INCLUDES
+                        ${CMSIS_INCLUDE_DIRS}
+                        ${FreeRTOS_INCLUDE_DIRS}
+                        ${TARGET_NXP_COMMON_INCLUDE_DIRS}
+                        ${TARGET_FREERTOS_COMMON_INCLUDE_DIRS}
+                        ${TARGET_FREERTOS_NANOCLR_INCLUDE_DIRS})
+                
+                add_dependencies(${target}.elf nano::NF_Debugger)
 
-        if(USE_NETWORKING_OPTION)
+            endif()
 
-            nf_add_lib_network(
-                BUILD_TARGET
-                    ${target}
-                EXTRA_SOURCES 
-                    ${LWIP_SOURCES}
-                EXTRA_INCLUDES 
+            nf_add_lib_native_assemblies(
+                EXTRA_INCLUDES
+                    ${CMSIS_INCLUDE_DIRS}
                     ${FreeRTOS_INCLUDE_DIRS}
-                    ${TARGET_NXP_COMMON_INCLUDE_DIRS}
-                    ${TARGET_FREERTOS_COMMON_INCLUDE_DIRS}
                     ${LWIP_INCLUDE_DIRS}
-                    ${CMSIS_INCLUDE_DIRS})
+                    ${TARGET_NXP_COMMON_INCLUDE_DIRS}
+                    ${TARGET_NXP_NANOCLR_INCLUDE_DIRS}
+                    ${TARGET_FREERTOS_COMMON_INCLUDE_DIRS}
+                    ${TARGET_FREERTOS_NANOCLR_INCLUDE_DIRS}
+                    ${FATFS_INCLUDE_DIRS}
+                    ${CMAKE_CURRENT_BINARY_DIR}
+                    ${CMAKE_SOURCE_DIR}/targets/FreeRTOS/NXP/_fatfs
+                    ${CMAKE_BINARY_DIR}/targets/${RTOS}/${TARGET_BOARD})
+            
+            add_dependencies(${target}.elf nano::NF_NativeAssemblies)
 
-            add_dependencies(${target}.elf nano::NF_Network)
+            if(USE_NETWORKING_OPTION)
 
+                nf_add_lib_network(
+                    BUILD_TARGET
+                        ${target}
+                    EXTRA_SOURCES 
+                        ${LWIP_SOURCES}
+                    EXTRA_INCLUDES 
+                        ${FreeRTOS_INCLUDE_DIRS}
+                        ${TARGET_NXP_COMMON_INCLUDE_DIRS}
+                        ${TARGET_FREERTOS_COMMON_INCLUDE_DIRS}
+                        ${LWIP_INCLUDE_DIRS}
+                        ${CMSIS_INCLUDE_DIRS})
+
+                add_dependencies(${target}.elf nano::NF_Network)
+
+            endif()
         endif()
-
     endif()
-
 endmacro()
 
 # Add FreeRTOS platform include directories to a specific CMake target
 # To be called from target CMakeList.txt
 macro(nf_add_platform_include_directories target)
 
-    target_include_directories(${target}.elf PUBLIC
-
-        ${TARGET_FREERTOS_COMMON_INCLUDE_DIRS}
-        ${TARGET_NXP_COMMON_INCLUDE_DIRS}
-        ${FreeRTOS_INCLUDE_DIRS}
-        ${CMSIS_INCLUDE_DIRS}
-    )
-    
-    # includes specific to nanoBooter
-    if(${target} STREQUAL ${NANOBOOTER_PROJECT_NAME})
-
+    if(${TARGET_BOARD} MATCHES "Maixduino")
         target_include_directories(${target}.elf PUBLIC
-            
-            ${TARGET_NXP_NANOBOOTER_INCLUDE_DIRS}
-            ${TARGET_FREERTOS_NANOBOOTER_INCLUDE_DIRS}
+            ${TARGET_FREERTOS_COMMON_INCLUDE_DIRS}
+            ${TARGET_MAIXDUINO_COMMON_INCLUDE_DIRS}
+            ${FreeRTOS_INCLUDE_DIRS}
+            ${CMSIS_INCLUDE_DIRS}
         )
 
-    endif()
+        # includes specific to nanoBooter
+        if(${target} STREQUAL ${NANOBOOTER_PROJECT_NAME})
 
-    # includes specific to nanoCLR
-    if(${target} STREQUAL ${NANOCLR_PROJECT_NAME})
+            target_include_directories(${target}.elf PUBLIC
+                
+                ${TARGET_MAIXDUINO_NANOBOOTER_INCLUDE_DIRS}
+                ${TARGET_FREERTOS_NANOBOOTER_INCLUDE_DIRS}
+            )
 
+        endif()
+
+        # includes specific to nanoCLR
+        if(${target} STREQUAL ${NANOCLR_PROJECT_NAME})
+
+            target_include_directories(${target}.elf PUBLIC
+
+                ${TARGET_MAIXDUINO_NANOCLR_INCLUDE_DIRS}
+                ${NANOCLR_PROJECT_INCLUDE_DIRS}
+                ${TARGET_FREERTOS_NANOCLR_INCLUDE_DIRS}
+                ${LWIP_INCLUDE_DIRS}
+                ${CMAKE_CURRENT_BINARY_DIR}
+
+            )
+
+        endif()
+    else()
         target_include_directories(${target}.elf PUBLIC
 
-            ${TARGET_NXP_NANOCLR_INCLUDE_DIRS}
-            ${NANOCLR_PROJECT_INCLUDE_DIRS}
-            ${TARGET_FREERTOS_NANOCLR_INCLUDE_DIRS}
-            ${LWIP_INCLUDE_DIRS}
-            ${CMAKE_CURRENT_BINARY_DIR}
-
+            ${TARGET_FREERTOS_COMMON_INCLUDE_DIRS}
+            ${TARGET_NXP_COMMON_INCLUDE_DIRS}
+            ${FreeRTOS_INCLUDE_DIRS}
+            ${CMSIS_INCLUDE_DIRS}
         )
+        
+        # includes specific to nanoBooter
+        if(${target} STREQUAL ${NANOBOOTER_PROJECT_NAME})
 
+            target_include_directories(${target}.elf PUBLIC
+                
+                ${TARGET_NXP_NANOBOOTER_INCLUDE_DIRS}
+                ${TARGET_FREERTOS_NANOBOOTER_INCLUDE_DIRS}
+            )
+
+        endif()
+
+        # includes specific to nanoCLR
+        if(${target} STREQUAL ${NANOCLR_PROJECT_NAME})
+
+            target_include_directories(${target}.elf PUBLIC
+
+                ${TARGET_NXP_NANOCLR_INCLUDE_DIRS}
+                ${NANOCLR_PROJECT_INCLUDE_DIRS}
+                ${TARGET_FREERTOS_NANOCLR_INCLUDE_DIRS}
+                ${LWIP_INCLUDE_DIRS}
+                ${CMAKE_CURRENT_BINARY_DIR}
+
+            )
+
+        endif()
     endif()
-
 
 endmacro()
 
@@ -211,49 +312,99 @@ macro(nf_add_platform_sources target)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/target_common.h.in
                    ${CMAKE_BINARY_DIR}/targets/${RTOS}/${TARGET_BOARD}/target_common.h @ONLY)
 
-    # sources common to both builds
-    target_sources(${target}.elf PUBLIC
-    
-        ${TARGET_FREERTOS_COMMON_SOURCES}
-        ${TARGET_NXP_COMMON_SOURCES}
+    if(${TARGET_BOARD} MATCHES "Maixduino")
+        # sources common to both builds
+        target_sources(${target}.elf PUBLIC
         
-        ${FreeRTOS_SOURCES}
-    )
-
-    # sources specific to nanoBooter
-    if(${target} STREQUAL ${NANOBOOTER_PROJECT_NAME})
-
-        # add header files with common OS definitions and board definitions 
-        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/nanoBooter/target_board.h.in
-                       ${CMAKE_BINARY_DIR}/targets/${RTOS}/${TARGET_BOARD}/nanoBooter/target_board.h @ONLY)
-
-        target_sources(${target}.elf PUBLIC
-            ${TARGET_NXP_NANOBOOTER_SOURCES}
-        )
-
-    endif()
-
-    # sources specific to nanoCLR
-    if(${target} STREQUAL ${NANOCLR_PROJECT_NAME})
-
-        # add header files with common OS definitions and board definitions 
-        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/nanoCLR/target_board.h.in
-                       ${CMAKE_BINARY_DIR}/targets/${RTOS}/${TARGET_BOARD}/nanoCLR/target_board.h @ONLY)
-
-        target_sources(${target}.elf PUBLIC
             ${TARGET_FREERTOS_COMMON_SOURCES}
-            ${TARGET_FREERTOS_NANOCLR_SOURCES}
-            ${TARGET_NXP_COMMON_SOURCES}
-            ${TARGET_NXP_NANOCLR_SOURCES}
-            ${FATFS_SOURCES}
+            ${TARGET_MAIXDUINO_COMMON_SOURCES}
+            
+            ${FreeRTOS_SOURCES}
         )
 
-        if(USE_NETWORKING_OPTION)
-            target_link_libraries(${target}.elf
-                nano::NF_Network
+        # link kendryte-freertos-sdk
+        set(NFACS_EXTRA_LIBRARIES m freertos atomic bsp c stdc++ drivers posix CACHE INTERNAL "make global")
+
+        # sources specific to nanoBooter
+        if(${target} STREQUAL ${NANOBOOTER_PROJECT_NAME})
+
+            # add header files with common OS definitions and board definitions 
+            configure_file(${CMAKE_CURRENT_SOURCE_DIR}/nanoBooter/target_board.h.in
+                        ${CMAKE_BINARY_DIR}/targets/${RTOS}/${TARGET_BOARD}/nanoBooter/target_board.h @ONLY)
+
+            target_sources(${target}.elf PUBLIC
+                ${TARGET_MAIXDUINO_NANOBOOTER_SOURCES}
             )
+
         endif()
 
+        # sources specific to nanoCLR
+        if(${target} STREQUAL ${NANOCLR_PROJECT_NAME})
+
+            # add header files with common OS definitions and board definitions 
+            configure_file(${CMAKE_CURRENT_SOURCE_DIR}/nanoCLR/target_board.h.in
+                        ${CMAKE_BINARY_DIR}/targets/${RTOS}/${TARGET_BOARD}/nanoCLR/target_board.h @ONLY)
+
+            target_sources(${target}.elf PUBLIC
+                ${TARGET_FREERTOS_COMMON_SOURCES}
+                ${TARGET_FREERTOS_NANOCLR_SOURCES}
+                ${TARGET_MAIXDUINO_COMMON_SOURCES}
+                ${TARGET_MAIXDUINO_NANOCLR_SOURCES}
+                ${FATFS_SOURCES}
+            )
+
+            if(USE_NETWORKING_OPTION)
+                target_link_libraries(${target}.elf
+                    nano::NF_Network
+                )
+            endif()
+
+        endif()
+    else()
+        # sources common to both builds
+        target_sources(${target}.elf PUBLIC
+        
+            ${TARGET_FREERTOS_COMMON_SOURCES}
+            ${TARGET_NXP_COMMON_SOURCES}
+            
+            ${FreeRTOS_SOURCES}
+        )
+
+        # sources specific to nanoBooter
+        if(${target} STREQUAL ${NANOBOOTER_PROJECT_NAME})
+
+            # add header files with common OS definitions and board definitions 
+            configure_file(${CMAKE_CURRENT_SOURCE_DIR}/nanoBooter/target_board.h.in
+                        ${CMAKE_BINARY_DIR}/targets/${RTOS}/${TARGET_BOARD}/nanoBooter/target_board.h @ONLY)
+
+            target_sources(${target}.elf PUBLIC
+                ${TARGET_NXP_NANOBOOTER_SOURCES}
+            )
+
+        endif()
+
+        # sources specific to nanoCLR
+        if(${target} STREQUAL ${NANOCLR_PROJECT_NAME})
+
+            # add header files with common OS definitions and board definitions 
+            configure_file(${CMAKE_CURRENT_SOURCE_DIR}/nanoCLR/target_board.h.in
+                        ${CMAKE_BINARY_DIR}/targets/${RTOS}/${TARGET_BOARD}/nanoCLR/target_board.h @ONLY)
+
+            target_sources(${target}.elf PUBLIC
+                ${TARGET_FREERTOS_COMMON_SOURCES}
+                ${TARGET_FREERTOS_NANOCLR_SOURCES}
+                ${TARGET_NXP_COMMON_SOURCES}
+                ${TARGET_NXP_NANOCLR_SOURCES}
+                ${FATFS_SOURCES}
+            )
+
+            if(USE_NETWORKING_OPTION)
+                target_link_libraries(${target}.elf
+                    nano::NF_Network
+                )
+            endif()
+
+        endif()
     endif()
 
 endmacro()

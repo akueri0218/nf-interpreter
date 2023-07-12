@@ -20,6 +20,8 @@
 // #include "Target_BlockStorage_iMXRTFlashDriver.h"
 #include "CLR_Startup_Thread.h"
 
+#include <stdio.h>
+
 // configure heap memory
 uint8_t ucHeap[configTOTAL_HEAP_SIZE];
 
@@ -28,20 +30,22 @@ uint8_t ucHeap[configTOTAL_HEAP_SIZE];
 
 int main(void)
 {
-    BOARD_InitBootPins();
-    BOARD_InitBootClocks();
-    BOARD_InitBootPeripherals();
-    BOARD_InitSEMC();
-    BOARD_USDHCClockConfiguration();
-    BOARD_InitRTC();
-    iMXRTFlexSPIDriver_InitializeDevice(NULL);
+    printf("hello AI world\n");
 
-    xTaskCreate(ReceiverThread, "ReceiverThread", 2048, NULL, configMAX_PRIORITIES - 1, NULL);
-    xTaskCreate(CLRStartupThread, "CLRStartupThread", 8192, NULL, configMAX_PRIORITIES - 2, NULL);
-    xTaskCreate(SdCardThread, "SDCardThread", configMINIMAL_STACK_SIZE + 100, NULL, configMAX_PRIORITIES - 2, NULL);
-    vTaskStartScheduler();
+    // BOARD_InitBootPins();
+    // BOARD_InitBootClocks();
+    // BOARD_InitBootPeripherals();
+    // BOARD_InitSEMC();
+    // BOARD_USDHCClockConfiguration();
+    // BOARD_InitRTC();
+    // iMXRTFlexSPIDriver_InitializeDevice(NULL);
 
-    for (;;)
-        ;
+    // xTaskCreate(ReceiverThread, "ReceiverThread", 2048, NULL, configMAX_PRIORITIES - 1, NULL);
+    // xTaskCreate(CLRStartupThread, "CLRStartupThread", 8192, NULL, configMAX_PRIORITIES - 2, NULL);
+    // xTaskCreate(SdCardThread, "SDCardThread", configMINIMAL_STACK_SIZE + 100, NULL, configMAX_PRIORITIES - 2, NULL);
+    // vTaskStartScheduler();
+
+    // for (;;)
+    //     ;
     return 0;
 }

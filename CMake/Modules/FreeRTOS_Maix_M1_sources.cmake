@@ -24,9 +24,7 @@ foreach(SRC_FILE ${FreeRTOS_PORT_SRCS})
     # TODO: change
     find_file(FreeRTOS_Maix_M1_SRC_FILE ${SRC_FILE}
         PATHS 
-
-            ${freertos_SOURCE_DIR}/portable/MemMang
-            ${freertos_SOURCE_DIR}/portable/GCC/ARM_CM7/r0p1
+            ${MAIXDUINO_FREERTOS_DIR}/portable
  
 
         CMAKE_FIND_ROOT_PATH_BOTH
@@ -36,7 +34,7 @@ foreach(SRC_FILE ${FreeRTOS_PORT_SRCS})
         message("${SRC_FILE} >> ${FreeRTOS_Maix_M1_SRC_FILE}")
     endif()
 
-    list(APPEND FreeRTOS_SOURCES ${FreeRTOS_IMXRT_SRC_FILE})
+    list(APPEND FreeRTOS_SOURCES ${FreeRTOS_Maix_M1_SRC_FILE})
     
 endforeach()
 

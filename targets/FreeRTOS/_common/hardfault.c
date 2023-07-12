@@ -54,7 +54,6 @@ __attribute__((used)) void prvGetRegistersFromStack(unsigned int *pulFaultStackA
 
 __attribute__((naked, aligned(4))) void HardFault_Handler(void)
 {
-#if defined(CPU_MIMXRT1062CVL5A)
     __asm volatile(
                    " tst lr, #4                                                \n"
                    " ite eq                                                    \n"
@@ -65,7 +64,4 @@ __attribute__((naked, aligned(4))) void HardFault_Handler(void)
                    " bx r2                                                     \n"
                    " handler2_address_const: .word prvGetRegistersFromStack    \n"                  ""
     );
-#elif defined(CPU_K210)
-
-#endif
 }

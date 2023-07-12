@@ -31,7 +31,13 @@ include(FreeRTOS_${TARGET_SERIES}_GCC_options)
 
 # set include directories for FreeRTOS
 list(APPEND FreeRTOS_INCLUDE_DIRS ${freertos_SOURCE_DIR}/include)
-list(APPEND FreeRTOS_INCLUDE_DIRS ${freertos_SOURCE_DIR}/portable/GCC/ARM_CM7/r0p1)
+
+if(${TARGET_BOARD} MATCHES "Maixduino")
+    list(APPEND FreeRTOS_INCLUDE_DIRS ${MAIXDUINO_FREERTOS_DIR}/portable)
+    set(freertos_SOURCE_DIR ${MAIXDUINO_FREERTOS_DIR})
+else()
+    list(APPEND FreeRTOS_INCLUDE_DIRS ${freertos_SOURCE_DIR}/portable/GCC/ARM_CM7/r0p1)
+endif()
 
 # source files and GCC options according to target vendor and series
 
