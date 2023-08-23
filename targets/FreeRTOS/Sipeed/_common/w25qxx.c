@@ -16,26 +16,45 @@
 #include <stdlib.h>
 #include <string.h>
 #include <devices.h>
+#include <sysctl.h>
+#include <spi.h>
 #include "w25qxx.h"
+
+static volatile spi_t *spi = (volatile spi_t *)SPI3_BASE_ADDR;
 
 uintptr_t spi_adapter;
 uintptr_t spi_stand;
+uintptr_t spi_xip;
+
+uint8_t default_xip = 1;
 
 static enum w25qxx_status_t w25qxx_receive_data(uint8_t* cmd_buff, uint8_t cmd_len, uint8_t* rx_buff, uint32_t rx_len)
 {
+    w25qxx_disable_xip();
+
     spi_dev_transfer_sequential(spi_stand, (uint8_t *)cmd_buff, cmd_len, (uint8_t *)rx_buff, rx_len);
+    
+    w25qxx_reset_xip();
+
     return W25QXX_OK;
 }
 
 static enum w25qxx_status_t w25qxx_receive_data_enhanced(uint32_t* cmd_buff, uint8_t cmd_len, uint8_t* rx_buff, uint32_t rx_len)
 {
+    w25qxx_disable_xip();
+
     memcpy(rx_buff, cmd_buff, cmd_len);
     io_read(spi_adapter, (uint8_t *)rx_buff, rx_len);
+
+    w25qxx_reset_xip();
+
     return W25QXX_OK;
 }
 
 static enum w25qxx_status_t w25qxx_send_data(uintptr_t file, uint8_t* cmd_buff, uint8_t cmd_len, uint8_t* tx_buff, uint32_t tx_len)
 {
+    w25qxx_disable_xip();
+
     configASSERT(cmd_len);
     uint8_t* tmp_buf = malloc(cmd_len + tx_len);
     memcpy(tmp_buf, cmd_buff, cmd_len);
@@ -43,46 +62,71 @@ static enum w25qxx_status_t w25qxx_send_data(uintptr_t file, uint8_t* cmd_buff, 
         memcpy(tmp_buf + cmd_len, tx_buff, tx_len);
     io_write(file, (uint8_t *)tmp_buf, cmd_len + tx_len);
     free(tmp_buf);
+
+    w25qxx_reset_xip();
+
     return W25QXX_OK;
 }
 
 static enum w25qxx_status_t w25qxx_write_enable(void)
 {
+    w25qxx_disable_xip();
+
     uint8_t cmd[1] = {WRITE_ENABLE};
 
     w25qxx_send_data(spi_stand, cmd, 1, 0, 0);
+
+    w25qxx_reset_xip();
+
     return W25QXX_OK;
 }
 
 static enum w25qxx_status_t w25qxx_read_status_reg1(uint8_t* reg_data)
 {
+    w25qxx_disable_xip();
+
     uint8_t cmd[1] = {READ_REG1};
     uint8_t data[1];
 
     w25qxx_receive_data(cmd, 1, data, 1);
     *reg_data = data[0];
+
+    w25qxx_reset_xip();
+
     return W25QXX_OK;
 }
 static enum w25qxx_status_t w25qxx_read_status_reg2(uint8_t* reg_data)
 {
+    w25qxx_disable_xip();
+
     uint8_t cmd[1] = {READ_REG2};
     uint8_t data[1];
 
     w25qxx_receive_data(cmd, 1, data, 1);
     *reg_data = data[0];
+
+    w25qxx_reset_xip();
+
     return W25QXX_OK;
 }
 static enum w25qxx_status_t w25qxx_write_status_reg(uint8_t reg1_data, uint8_t reg2_data)
 {
+    w25qxx_disable_xip();
+
     uint8_t cmd[3] = {WRITE_REG1, reg1_data, reg2_data};
 
     w25qxx_write_enable();
     w25qxx_send_data(spi_stand, cmd, 3, 0, 0);
+
+    w25qxx_reset_xip();
+
     return W25QXX_OK;
 }
 
 static enum w25qxx_status_t w25qxx_enable_quad_mode(void)
 {
+    w25qxx_disable_xip();
+
     uint8_t reg_data;
 
     w25qxx_read_status_reg2(&reg_data);
@@ -91,21 +135,32 @@ static enum w25qxx_status_t w25qxx_enable_quad_mode(void)
         reg_data |= REG2_QUAL_MASK;
         w25qxx_write_status_reg(0x00, reg_data);
     }
+
+    w25qxx_reset_xip();
+
     return W25QXX_OK;
 }
 
 static enum w25qxx_status_t w25qxx_is_busy(void)
 {
+    w25qxx_disable_xip();
+
     uint8_t status;
 
     w25qxx_read_status_reg1(&status);
+
+    w25qxx_reset_xip();
+
     if (status & REG1_BUSY_MASK)
         return W25QXX_BUSY;
+        
     return W25QXX_OK;
 }
 
 enum w25qxx_status_t w25qxx_sector_erase(uint32_t addr)
 {
+    w25qxx_disable_xip();
+
     uint8_t cmd[4] = {SECTOR_ERASE};
 
     cmd[1] = (uint8_t)(addr >> 16);
@@ -113,22 +168,32 @@ enum w25qxx_status_t w25qxx_sector_erase(uint32_t addr)
     cmd[3] = (uint8_t)(addr);
     w25qxx_write_enable();
     w25qxx_send_data(spi_stand, cmd, 4, 0, 0);
+
+    w25qxx_reset_xip();
+
     return W25QXX_OK;
 }
 
 enum w25qxx_status_t w25qxx_read_id(uint8_t *manuf_id, uint8_t *device_id)
 {
+    w25qxx_disable_xip();
+
     uint8_t cmd[4] = {READ_ID, 0x00, 0x00, 0x00};
     uint8_t data[2] = {0};
 
     w25qxx_receive_data(cmd, 4, data, 2);
     *manuf_id = data[0];
     *device_id = data[1];
+
+    w25qxx_reset_xip();
+
     return W25QXX_OK;
 }
 
 static enum w25qxx_status_t w25qxx_read_data_less_64kb(uint32_t addr, uint8_t* data_buf, uint32_t length)
 {
+    w25qxx_disable_xip();
+
     uint32_t cmd[2];
 
     switch (WORK_TRANS_MODE)
@@ -156,11 +221,16 @@ static enum w25qxx_status_t w25qxx_read_data_less_64kb(uint32_t addr, uint8_t* d
             w25qxx_receive_data((uint8_t*)cmd, 4, data_buf, length);
             break;
     }
+
+    w25qxx_reset_xip();
+
     return W25QXX_OK;
 }
 
 enum w25qxx_status_t w25qxx_read_data(uint32_t addr, uint8_t* data_buf, uint32_t length)
 {
+    w25qxx_disable_xip();
+
     uint32_t len;
 
     while (length)
@@ -171,11 +241,16 @@ enum w25qxx_status_t w25qxx_read_data(uint32_t addr, uint8_t* data_buf, uint32_t
         data_buf += len;
         length -= len;
     }
+
+    w25qxx_reset_xip();
+
     return W25QXX_OK;
 }
 
 static enum w25qxx_status_t w25qxx_page_program(uint32_t addr, uint8_t* data_buf, uint32_t length)
 {
+    w25qxx_disable_xip();
+
     uint32_t cmd[2];
     w25qxx_write_enable();
     if (WORK_TRANS_MODE == SPI_FF_QUAD)
@@ -196,11 +271,16 @@ static enum w25qxx_status_t w25qxx_page_program(uint32_t addr, uint8_t* data_buf
     }
     while (w25qxx_is_busy() == W25QXX_BUSY)
         ;
+
+    w25qxx_reset_xip();
+
     return W25QXX_OK;
 }
 
 static enum w25qxx_status_t w25qxx_sector_program(uint32_t addr, uint8_t* data_buf)
 {
+    w25qxx_disable_xip();
+
     uint8_t index;
 
     for (index = 0; index < w25qxx_FLASH_PAGE_NUM_PER_SECTOR; index++)
@@ -209,11 +289,16 @@ static enum w25qxx_status_t w25qxx_sector_program(uint32_t addr, uint8_t* data_b
         addr += w25qxx_FLASH_PAGE_SIZE;
         data_buf += w25qxx_FLASH_PAGE_SIZE;
     }
+
+    w25qxx_reset_xip();
+
     return W25QXX_OK;
 }
 
 enum w25qxx_status_t w25qxx_write_data(uint32_t addr, uint8_t* data_buf, uint32_t length)
 {
+    w25qxx_disable_xip();
+
     uint32_t sector_addr, sector_offset, sector_remain, write_len, index;
     uint8_t swap_buf[w25qxx_FLASH_SECTOR_SIZE];
     uint8_t *pread, *pwrite;
@@ -253,20 +338,26 @@ enum w25qxx_status_t w25qxx_write_data(uint32_t addr, uint8_t* data_buf, uint32_
         addr += write_len;
         data_buf += write_len;
     }
+
+    w25qxx_reset_xip();
+
     return W25QXX_OK;
 }
 
 enum w25qxx_status_t w25qxx_init(uintptr_t spi_in)
 {
+    sysctl->peri.spi3_xip_en = 0;
+
     uint8_t manuf_id, device_id;
     spi_stand = spi_get_device(spi_in, SPI_MODE_0, SPI_FF_STANDARD, CHIP_SELECT, FRAME_LENGTH);
     spi_dev_set_clock_rate(spi_stand, 800000);
+
     w25qxx_read_id(&manuf_id, &device_id);
     if ((manuf_id != 0xEF && manuf_id != 0xC8) || (device_id != 0x17 && device_id != 0x16))
     {
-        printf("manuf_id:0x%02x, device_id:0x%02x\n", manuf_id, device_id);
+        //printf("manuf_id:0x%02x, device_id:0x%02x\n", manuf_id, device_id);
     }
-    printf("manuf_id:0x%02x, device_id:0x%02x\n", manuf_id, device_id);
+    //printf("manuf_id:0x%02x, device_id:0x%02x\n", manuf_id, device_id);
     switch (WORK_TRANS_MODE)
     {
         case SPI_FF_DUAL:
@@ -283,6 +374,114 @@ enum w25qxx_status_t w25qxx_init(uintptr_t spi_in)
             spi_adapter = spi_stand;
             break;
     }
+
+    spi_xip = spi_get_device(spi_in, SPI_MODE_0, SPI_FF_QUAD, CHIP_SELECT, FRAME_LENGTH);
+
+    spi_dev_config_non_standard(spi_xip,  8, 24, 4, SPI_AITM_ADDR_STANDARD);
+    spi_dev_init_xip(spi_xip);
+
+    w25qxx_reset_xip();
+
+    return W25QXX_OK;
+}
+
+enum w25qxx_status_t w25qxx_block32_erase(uint32_t addr)
+{
+    w25qxx_disable_xip();
+
+    uint8_t cmd[4] = {BLOCK_32K_ERASE};
+
+    cmd[1] = (uint8_t)(addr >> 16);
+    cmd[2] = (uint8_t)(addr >> 8);
+    cmd[3] = (uint8_t)(addr);
+    w25qxx_write_enable();
+    w25qxx_send_data(spi_stand, cmd, 4, 0, 0);
+
+    w25qxx_reset_xip();
+
+    return W25QXX_OK;
+}
+
+enum w25qxx_status_t w25qxx_block64_erase(uint32_t addr)
+{
+    w25qxx_disable_xip();
+
+    uint8_t cmd[4] = {BLOCK_64K_ERASE};
+
+    cmd[1] = (uint8_t)(addr >> 16);
+    cmd[2] = (uint8_t)(addr >> 8);
+    cmd[3] = (uint8_t)(addr);
+    w25qxx_write_enable();
+    w25qxx_send_data(spi_stand, cmd, 4, 0, 0);
+
+    w25qxx_reset_xip();
+
+    return W25QXX_OK;
+}
+
+enum w25qxx_status_t w25qxx_read_data_xip(uint32_t addr, uint8_t* data_buf, uint32_t length)
+{
+    w25qxx_enable_xip();
+
+    uint8_t *src  = (uint8_t *)(SPI3_BASE_ADDR + addr);
+
+    memcpy(data_buf, (void *)src, length);
+    
+    w25qxx_reset_xip();
+
+    return W25QXX_OK;
+}
+
+enum w25qxx_status_t w25qxx_enable_xip()
+{
+    if(!sysctl->peri.spi3_xip_en && spi_xip)
+    { 
+        sysctl->peri.spi3_xip_en = 0;
+
+        spi_dev_set_clock_rate(spi_xip, 43333333);
+        spi->ssienr = 0x01;
+
+        sysctl->peri.spi3_xip_en = 1;
+    }
+
+    return W25QXX_OK;
+}
+
+enum w25qxx_status_t w25qxx_disable_xip()
+{
+    sysctl->peri.spi3_xip_en = 0;
+
+    if(spi_stand)
+    {
+        spi_dev_set_clock_rate(spi_stand, 800000);
+    }
+
+    return W25QXX_OK;
+}
+
+enum w25qxx_status_t w25qxx_reset_xip()
+{
+    if(default_xip != sysctl->peri.spi3_xip_en)
+    {
+        if(default_xip)
+        {
+            w25qxx_enable_xip();
+        }
+        else
+        {
+            w25qxx_disable_xip();
+        }
+    }
+
+    return W25QXX_OK;
+}
+
+enum w25qxx_status_t w25qxx_set_default_xip(uint8_t en)
+{
+    default_xip = en;
+
+    w25qxx_reset_xip();
+
     return W25QXX_OK;
 }
 

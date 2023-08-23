@@ -17,9 +17,9 @@
 #include <stdint.h>
 
 /* clang-format off */
-#define WORK_TRANS_MODE SPI_FF_STANDARD
-/* #define WORK_TRANS_MODE SPI_FF_DUAL */
-/* #define WORK_TRANS_MODE SPI_FF_QUAD */
+//#define WORK_TRANS_MODE SPI_FF_STANDARD
+#define WORK_TRANS_MODE SPI_FF_DUAL
+//#define WORK_TRANS_MODE SPI_FF_QUAD
 
 #define CHIP_SELECT                         1
 #define WAIT_CYCLE                          8
@@ -81,6 +81,13 @@ enum w25qxx_status_t
 enum w25qxx_status_t w25qxx_init(uintptr_t spi_in);
 enum w25qxx_status_t w25qxx_write_data(uint32_t addr, uint8_t* data_buf, uint32_t length);
 enum w25qxx_status_t w25qxx_read_data(uint32_t addr, uint8_t* data_buf, uint32_t length);
+
+/* XIP Features */
+enum w25qxx_status_t w25qxx_read_data_xip(uint32_t addr, uint8_t* data_buf, uint32_t length);
+enum w25qxx_status_t w25qxx_enable_xip();
+enum w25qxx_status_t w25qxx_disable_xip();
+enum w25qxx_status_t w25qxx_reset_xip();
+enum w25qxx_status_t w25qxx_set_default_xip(uint8_t en);
 
 #endif
 

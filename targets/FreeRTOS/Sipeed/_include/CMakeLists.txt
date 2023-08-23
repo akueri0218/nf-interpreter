@@ -3,7 +3,7 @@
 # See LICENSE file in the project root for full license information.
 #
 
-# append include directory for target NXP
+# append include directory for target MAIXDUINO
 list(APPEND TARGET_MAIXDUINO_COMMON_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR})
 list(APPEND TARGET_MAIXDUINO_COMMON_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/targets/${RTOS}/${TARGET_BOARD})
 
