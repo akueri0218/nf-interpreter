@@ -12,8 +12,8 @@ list(APPEND FreeRTOS_INCLUDE_DIRS ${TARGET_BASE_LOCATION})
 
 # TODO change
 set(FreeRTOS_PORT_SRCS
+    # portable
     heap_4.c
-
     port.c
 )
 
@@ -21,11 +21,9 @@ foreach(SRC_FILE ${FreeRTOS_PORT_SRCS})
 
     set(FreeRTOS_Maix_M1_SRC_FILE SRC_FILE-NOTFOUND)
 
-    # TODO: change
     find_file(FreeRTOS_Maix_M1_SRC_FILE ${SRC_FILE}
         PATHS 
-            ${MAIXDUINO_FREERTOS_DIR}/portable
- 
+            ${freertos_SOURCE_DIR}/portable
 
         CMAKE_FIND_ROOT_PATH_BOTH
     )
@@ -37,4 +35,3 @@ foreach(SRC_FILE ${FreeRTOS_PORT_SRCS})
     list(APPEND FreeRTOS_SOURCES ${FreeRTOS_Maix_M1_SRC_FILE})
     
 endforeach()
-

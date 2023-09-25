@@ -13,7 +13,13 @@ list(APPEND LWIP_INCLUDE_DIRS ${lwip_SOURCE_DIR}/src/include/netif)
 list(APPEND LWIP_INCLUDE_DIRS ${lwip_SOURCE_DIR}/src/include/compat)
 list(APPEND LWIP_INCLUDE_DIRS ${lwip_SOURCE_DIR}/src/include/compat/posix)
 list(APPEND LWIP_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/src/DeviceInterfaces/Networking.Sntp)
-list(APPEND LWIP_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/targets/FreeRTOS/NXP/_LwIP)
+
+if(${TARGET_BOARD} MATCHES "Maixduino")
+	list(APPEND LWIP_INCLUDE_DIRS ${lwip_SOURCE_DIR}/src/include/arch)
+	list(APPEND LWIP_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/targets/FreeRTOS/Sipeed/_LwIP)
+else()
+	list(APPEND LWIP_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/targets/FreeRTOS/NXP/_LwIP)
+endif()
 
 set(LWIP_SRCS
 
@@ -189,10 +195,6 @@ foreach(SRC_FILE ${LWIP_SRCS})
             ${lwip_SOURCE_DIR}/src/netif/ppp
             ${lwip_SOURCE_DIR}/src/netif/ppp/polarssl
 
-			# ${CMAKE_SOURCE_DIR}/targets/ChibiOS/_Lwip
-			# TODO: this needs to be changed so it's not platform dependent
-			${CMAKE_SOURCE_DIR}/targets/FreeRTOS/NXP/_LwIP
-
             # APPS:
             ${lwip_SOURCE_DIR}/src/apps/snmp
             ${lwip_SOURCE_DIR}/src/apps/http
@@ -206,6 +208,29 @@ foreach(SRC_FILE ${LWIP_SRCS})
         CMAKE_FIND_ROOT_PATH_BOTH
     )
 
+	
+if(${TARGET_BOARD} MATCHES "Maixduino")
+	find_file(LWIP_SRC_FILE ${SRC_FILE}
+		PATHS
+			# ${CMAKE_SOURCE_DIR}/targets/ChibiOS/_Lwip
+			# TODO: this needs to be changed so it's not platform dependent
+			${CMAKE_SOURCE_DIR}/targets/FreeRTOS/Sipeed/_LwIP
+		
+		CMAKE_FIND_ROOT_PATH_BOTH
+	)
+else()
+	find_file(LWIP_SRC_FILE ${SRC_FILE}
+		PATHS
+			# ${CMAKE_SOURCE_DIR}/targets/ChibiOS/_Lwip
+			# TODO: this needs to be changed so it's not platform dependent
+			${CMAKE_SOURCE_DIR}/targets/FreeRTOS/NXP/_LwIP
+
+		CMAKE_FIND_ROOT_PATH_BOTH
+	)
+endif()
+
+	# message(${LWIP_SRC_FILE})
+
     if (BUILD_VERBOSE)
 		message("${SRC_FILE} >> ${LWIP_SRC_FILE}")
     endif()
@@ -213,6 +238,8 @@ foreach(SRC_FILE ${LWIP_SRCS})
     list(APPEND LWIP_SOURCES ${LWIP_SRC_FILE})
 
 endforeach()
+
+set(LWIP_SOURCES ${LWIP_SOURCES} CACHE INTERNAL "make global")
 
 include(FindPackageHandleStandardArgs)
 

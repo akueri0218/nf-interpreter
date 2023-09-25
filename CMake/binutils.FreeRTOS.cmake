@@ -135,7 +135,7 @@ macro(nf_add_platform_dependencies target)
                     ${TARGET_FREERTOS_NANOCLR_INCLUDE_DIRS}
                     ${FATFS_INCLUDE_DIRS}
                     ${CMAKE_CURRENT_BINARY_DIR}
-                    ${CMAKE_SOURCE_DIR}/targets/FreeRTOS/Sipeed/_fatfs # 正しいのわからん
+                    ${CMAKE_SOURCE_DIR}/targets/FreeRTOS/Sipeed/_fatfs
                     ${CMAKE_BINARY_DIR}/targets/${RTOS}/${TARGET_BOARD})
             
             add_dependencies(${target}.elf nano::NF_NativeAssemblies)
@@ -319,11 +319,12 @@ macro(nf_add_platform_sources target)
             ${TARGET_FREERTOS_COMMON_SOURCES}
             ${TARGET_MAIXDUINO_COMMON_SOURCES}
             
-            ${FreeRTOS_SOURCES}
+            # ${FreeRTOS_SOURCES}
         )
 
         # link kendryte-freertos-sdk
-        set(NFACS_EXTRA_LIBRARIES m freertos atomic bsp c stdc++ drivers posix CACHE INTERNAL "make global")
+        # * add hal
+        # set(NFACS_EXTRA_LIBRARIES m freertos atomic bsp c stdc++ drivers posix hal CACHE INTERNAL "make global")
 
         # sources specific to nanoBooter
         if(${target} STREQUAL ${NANOBOOTER_PROJECT_NAME})
@@ -422,7 +423,6 @@ endmacro()
 # optional BOOTER_EXTRA_LINK_FLAGS extra nanoBooter link flags to pass to nf_set_link_options() 
 # optional CLR_EXTRA_LINK_FLAGS extra nanoCLR link flags to pass to nf_set_link_options() 
 macro(nf_setup_target_build)
-
     # OK to pass ARGN, to have it perform it's parsings and validation 
     nf_setup_target_build_common(${ARGN})
 

@@ -12,7 +12,10 @@ configure_file(${CMAKE_SOURCE_DIR}/CMake/FreeRTOS_target_os.h.in
                ${CMAKE_BINARY_DIR}/targets/${RTOS}/${TARGET_BOARD}/target_os.h @ONLY)
 
 # append common source files
-list(APPEND TARGET_FREERTOS_COMMON_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/hardfault.c)
+if(!${TARGET_BOARD} MATCHES "Maixduino")
+    list(APPEND TARGET_FREERTOS_COMMON_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/hardfault.c)
+endif()
+
 list(APPEND TARGET_FREERTOS_COMMON_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/platform_heap.c)
 
 # append nanoHAL

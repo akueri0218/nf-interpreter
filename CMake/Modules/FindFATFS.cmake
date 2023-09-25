@@ -18,6 +18,8 @@ set(FATFS_SRCS
 )
 
 if(${TARGET_BOARD} MATCHES "Maixduino")
+    list(APPEND FATFS_INCLUDE_DIRS ${FREERTOS_INCLUDE})
+
     list(APPEND FATFS_SRCS ffsystem.c)
 endif()
 

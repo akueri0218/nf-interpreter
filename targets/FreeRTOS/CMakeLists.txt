@@ -5,11 +5,22 @@
 
 include(FetchContent)
 include(binutils.common)
+
+if(__riscv64)
+include(binutils.riscv64-unknown-elf)
+else()
 include(binutils.arm-none-eabi)
+endif()
+
 include(binutils.FreeRTOS)
 
 # Define PLATFORM base path
 set(BASE_PATH_FOR_PLATFORM ${CMAKE_CURRENT_SOURCE_DIR} PARENT_SCOPE)
+
+if(${TARGET_BOARD} MATCHES "Maixduino")
+    set(RTOS_SOURCE_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/Sipeed/_common/freertos")
+    set(RTOS_VERSION "V10.0.1-kernel-only")
+endif()
 
 # check if RTOS_SOURCE_FOLDER was specified or if it's empty (default is empty)
 set(NO_RTOS_SOURCE_FOLDER TRUE)

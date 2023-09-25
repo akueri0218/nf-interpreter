@@ -6,8 +6,8 @@
 include(FetchContent)
 include(binutils.common)
 
-# definitions in macros
-add_definitions(-DCONFIG_LOG_LEVEL=LOG_INFO -DCONFIG_LOG_ENABLE -DCONFIG_LOG_COLORS -DLOG_KERNEL -D__riscv64)
+set(FATFS_SOURCE ${CMAKE_CURRENT_LIST_DIR}/_common/fatfs)
+set(LWIP_SOURCE ${CMAKE_CURRENT_LIST_DIR}/_common/lwip)
 
 # check if FATFS_SOURCE was specified or if it's empty (default is empty)
 set(NO_FATFS_SOURCE TRUE)
@@ -62,11 +62,6 @@ if(NOT fatfs_POPULATED)
     # Fetch the content using previously declared details
     FetchContent_Populate(fatfs)
 endif()
-
-# have to delete the ffconf.h template from the repo
-execute_process(
-    COMMAND ${CMAKE_COMMAND} -E remove ${fatfs_SOURCE_DIR}/source/ffconf.h
-)
 
 # check if LWIP_SOURCE was specified or if it's empty (default is empty)
 set(NO_LWIP_SOURCE TRUE)

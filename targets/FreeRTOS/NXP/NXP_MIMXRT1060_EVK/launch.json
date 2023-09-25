@@ -50,7 +50,7 @@
           "text": "set remotetimeout 60"
         },
         {
-          "text": "target extended-remote | C:/nxp/MCUXpressoIDE_10.2.1_795/ide/bin/crt_emu_cm_redlink.exe -g -mi -2 -pMIMXRT1062xxxxA -vendor=NXP --reset= -cache=disable --flash-dir=C:/nxp/MCUXpressoIDE_10.2.1_795/ide/bin/Flash --flash-driver=MIMXRT1060_SFDP_QSPI.cfx --no-packed"
+          "text": "target extended-remote | C:/nxp/MCUXpressoIDE_11.7.1_9221/ide/binaries/crt_emu_cm_redlink.exe -g -mi -2 -pMIMXRT1062xxxxA -vendor=NXP --reset= -cache=disable --flash-dir=C:/nxp/MCUXpressoIDE_11.7.1_9221/ide/binaries/Flash --flash-driver=MIMXRT1060_SFDP_QSPI.cfx --no-packed"
         },
         {
           "text": "set mem inaccessible-by-default off"

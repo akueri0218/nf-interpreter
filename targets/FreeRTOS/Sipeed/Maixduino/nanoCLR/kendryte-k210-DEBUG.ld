@@ -7,33 +7,40 @@ MEMORY
 {
   /*
    * Memory with CPU cache.
-   *6M CPU SRAM would be used as FLASH
+   *6M CPU SRAM
    */
-  CONFIG_FLASH     (r) : ORIGIN = 0x80010000, LENGTH = 0x00010000 /*   64kB */
-  BOARD_FLASH     (rx) : ORIGIN = 0x80020000, LENGTH = 0x001E0000 /* 1920kB */
-  DEPLOYMENT_FLASH (r) : ORIGIN = 0x80200000, LENGTH = 0x00400000 /*    4MB */
-  
+  RAM (wxa!ri) : ORIGIN = 0x80000000, LENGTH = (6 * 1024 * 1024 - 128) /* 6M - 48 bytes */
   /*
    * Memory without CPU cache
    * 6M CPU SRAM
   */
-  RAM            (rwx) : ORIGIN = 0x40000000, LENGTH = 0x00600000 /*    6MB */
+  RAM_NOCACHE (wxa!ri) : ORIGIN = 0x40000000, LENGTH = (6 * 1024 * 1024)
+
+  /* nano Framework specific region */
+  BOOTCLPBRD (rwx) : ORIGIN = 0x805FFF80, LENGTH = 0x00000080 /* 128 bytes */
+
+  CONFIG_FLASH (r) : ORIGIN = 0x547F0000, LENGTH = 0x00010000
+  FLASH (r) : ORIGIN = 0x54800000, LENGTH = (8 * 1024 * 1024) /* 16M - 6M - margin */
+
+  /*
+  CONFIG_FLASH
+  BOARD_FLASH
+  DEPLOYMENT_FLASH
+
+  at k210, flash memory isn't mapped in memory
+  */
 }
 
-__flash_start__      = 0x80000000;
-__nanoImage_start__  = ORIGIN(BOARD_FLASH);
-__nanoImage_size__   = LENGTH(BOARD_FLASH);
-__nanoImage_end__    = __nanoImage_start__ + __nanoImage_size__;
+PROVIDE( _ram_end    = ORIGIN(RAM) + LENGTH(RAM) );
+PROVIDE( _stack_size = 1 << 16 );
+
+__clrHeap_start__    = ORIGIN(RAM);
+__clrHeap_size__     = LENGTH(RAM);
+__flash_start__      = ORIGIN(FLASH);
+__flash_end__        = ORIGIN(FLASH) + LENGTH(FLASH);
 __nanoConfig_start__ = ORIGIN(CONFIG_FLASH);
 __nanoConfig_size__  = LENGTH(CONFIG_FLASH);
-__nanoConfig_end__   = __nanoConfig_start__ + __nanoConfig_size__;
-__deployment_start__ = ORIGIN(DEPLOYMENT_FLASH);
-__deployment_size__  = LENGTH(DEPLOYMENT_FLASH);
-__deployment_end__   = __deployment_start__ + __deployment_size__;
-
-PROVIDE( _ram_start  = 0x80000000 );
-PROVIDE( _ram_end    = 0x80600000 );
-PROVIDE( _stack_size = 1 << 16 );
+__nanoConfig_end__   = ORIGIN(CONFIG_FLASH) + LENGTH(CONFIG_FLASH);
 
 /*
  * The OUTPUT_ARCH command specifies the machine architecture where the
@@ -46,16 +53,6 @@ OUTPUT_ARCH( "riscv" )
  * execute). The symbol _start is defined in crt0.S
  */
 ENTRY(_start)
-
-/*
- * The GROUP command is special since the listed archives will be
- * searched repeatedly until there are no new undefined references. We
- * need this since -lc depends on -lgloss and -lgloss depends on -lc. I
- * thought gcc would automatically include -lgcc when needed, but
- * in this file includes it explicitly here and I was seeing link errors
- * without it.
- */
-/* GROUP( -lc -lgloss -lgcc ) */
 
 /*
  * The linker only pays attention to the PHDRS command when generating
@@ -77,12 +74,12 @@ SECTIONS
   {
     KEEP( *(.text.start) )
     KEEP( *(.text.systick) )
-  } > BOARD_FLASH : DATA
+  } > RAM : DATA
   
   .init :
   {
     KEEP (*(SORT_NONE(.init)))
-  } > BOARD_FLASH : DATA
+  } > RAM : DATA
   
   . = ALIGN(8);
   . = .;
@@ -95,52 +92,52 @@ SECTIONS
     *(.text .stub .text.* .gnu.linkonce.t.*)
     /* .gnu.warning sections are handled specially by elf32.em.  */
     *(.gnu.warning)
-  } > BOARD_FLASH : DATA
+  } > RAM : DATA
   
   .fini :
   {
     KEEP (*(SORT_NONE(.fini)))
-  } > BOARD_FLASH : DATA
+  } > RAM : DATA
   PROVIDE (__etext = .);
   PROVIDE (_etext = .);
   PROVIDE (etext = .);
   
-  .rodata : { *(.rodata .rodata.* .gnu.linkonce.r.*) } > BOARD_FLASH : DATA
-  .rodata1 : { *(.rodata1) } > BOARD_FLASH : DATA
+  .rodata : { *(.rodata .rodata.* .gnu.linkonce.r.*) } > RAM : DATA
+  .rodata1 : { *(.rodata1) } > RAM : DATA
   .sdata2 :
   {
     *(.sdata2 .sdata2.* .gnu.linkonce.s2.*)
-  } > BOARD_FLASH : DATA
+  } > RAM : DATA
   /* Exception handling  */
   .eh_frame :
   {
     KEEP (*(.eh_frame)) *(.eh_frame.*)
     . = ALIGN(8);
-  } > BOARD_FLASH : DATA
-  .gnu_extab : { *(.gnu_extab) } > BOARD_FLASH : DATA
-  .gcc_except_table : { *(.gcc_except_table .gcc_except_table.*) } > BOARD_FLASH : DATA
-  .exception_ranges : { *(.exception_ranges .exception_ranges*) } > BOARD_FLASH : DATA
+  } > RAM : DATA
+  .gnu_extab : { *(.gnu_extab) } > RAM : DATA
+  .gcc_except_table : { *(.gcc_except_table .gcc_except_table.*) } > RAM : DATA
+  .exception_ranges : { *(.exception_ranges .exception_ranges*) } > RAM : DATA
   
   .preinit_array :
   {
     PROVIDE_HIDDEN (__preinit_array_start = .);
     KEEP (*(.preinit_array))
     PROVIDE_HIDDEN (__preinit_array_end = .);
-  } > BOARD_FLASH : DATA
+  } > RAM : DATA
   .init_array :
   {
     PROVIDE_HIDDEN (__init_array_start = .);
     KEEP (*(SORT_BY_INIT_PRIORITY(.init_array.*) SORT_BY_INIT_PRIORITY(.ctors.*)))
     KEEP (*(.init_array EXCLUDE_FILE (*crtbegin.o *crtbegin?.o *crtend.o *crtend?.o ) .ctors))
     PROVIDE_HIDDEN (__init_array_end = .);
-  } > BOARD_FLASH : DATA
+  } > RAM : DATA
   .fini_array :
   {
     PROVIDE_HIDDEN (__fini_array_start = .);
     KEEP (*(SORT_BY_INIT_PRIORITY(.fini_array.*) SORT_BY_INIT_PRIORITY(.dtors.*)))
     KEEP (*(.fini_array EXCLUDE_FILE (*crtbegin.o *crtbegin?.o *crtend.o *crtend?.o ) .dtors))
     PROVIDE_HIDDEN (__fini_array_end = .);
-  } > BOARD_FLASH : DATA
+  } > RAM : DATA
 
   .ctors :
   {
@@ -162,7 +159,7 @@ SECTIONS
     KEEP (*(EXCLUDE_FILE (*crtend.o *crtend?.o ) .ctors))
     KEEP (*(SORT(.ctors.*)))
     KEEP (*(.ctors))
-  } > BOARD_FLASH : DATA
+  } > RAM : DATA
   .dtors :
   {
     KEEP (*crtbegin.o(.dtors))
@@ -170,15 +167,15 @@ SECTIONS
     KEEP (*(EXCLUDE_FILE (*crtend.o *crtend?.o ) .dtors))
     KEEP (*(SORT(.dtors.*)))
     KEEP (*(.dtors))
-  } > BOARD_FLASH : DATA
+  } > RAM : DATA
   
   . = ALIGN(64);
   .data :
   {
     *(.data .data.* .gnu.linkonce.d.*)
     SORT(CONSTRUCTORS)
-  } > BOARD_FLASH : DATA
-  .data1 : { *(.data1) } > BOARD_FLASH : DATA
+  } > RAM : DATA
+  .data1 : { *(.data1) } > RAM : DATA
   /* We want the small data sections together, so single-instruction offsets
      can access them all, and initialized data all before uninitialized, so
      we can shorten the on-disk segment size.  */
@@ -187,19 +184,19 @@ SECTIONS
     __global_pointer$ = . + 0x800;
     *(.srodata.cst16) *(.srodata.cst8) *(.srodata.cst4) *(.srodata.cst2) *(.srodata .srodata.*)
     *(.sdata .sdata.* .gnu.linkonce.s.*)
-  } > BOARD_FLASH : DATA
+  } > RAM : DATA
   _edata = .; PROVIDE (edata = .);
   
   . = ALIGN(8);
   . = .;
   __bss_start = .;
-  .sbss2 : { *(.sbss2 .sbss2.* .gnu.linkonce.sb2.*) } > BOARD_FLASH : DYN_DATA
+  .sbss2 : { *(.sbss2 .sbss2.* .gnu.linkonce.sb2.*) } > RAM : DYN_DATA
   .sbss :
   {
     *(.dynsbss)
     *(.sbss .sbss.* .gnu.linkonce.sb.*)
     *(.scommon)
-  } > BOARD_FLASH : DYN_DATA
+  } > RAM : DYN_DATA
   .bss :
   {
     *(.dynbss)
@@ -211,7 +208,7 @@ SECTIONS
        FIXME: Why do we need it? When there is no .bss section, we don't
        pad the .data section.  */
     . = ALIGN(. != 0 ? 64 / 8 : 1);
-  } > BOARD_FLASH : DYN_DATA
+  } > RAM : DYN_DATA
   __bss_end = .;
 
   PROVIDE( _tls_data = ABSOLUTE(.) );
@@ -229,7 +226,7 @@ SECTIONS
     *(.tdata .tdata.*)
     *(.gnu.linkonce.td.*)
     KEEP( *(.tdata.end) )
-  } > BOARD_FLASH : DATA
+  } > RAM : DATA
 
   /* Thread-local bss segment, .tbss (zero-initialized tls). */
   .tbss :
@@ -237,7 +234,7 @@ SECTIONS
     *(.tbss .tbss.*)
     *(.gnu.linkonce.tb.*)
     KEEP( *(.tbss.end) )
-  } > BOARD_FLASH : DYN_DATA
+  } > RAM : DYN_DATA
 
   /*
    * End of uninitalized data segement
@@ -256,8 +253,9 @@ SECTIONS
   PROVIDE( _sp0 = _tp0 + _stack_size );
   PROVIDE( _sp1 = _tp1 + _stack_size );
   /* Heap end is at the end of memory, the memory size can set in kconfig */
-  PROVIDE( _heap_end = __nanoImage_end__ );
+  PROVIDE( _heap_end = _ram_end );
   
+
   /* Stabs debugging sections.  */
   .stab          0 : { *(.stab) }
   .stabstr       0 : { *(.stabstr) }
@@ -291,5 +289,12 @@ SECTIONS
   .debug_funcnames 0 : { *(.debug_funcnames) }
   .debug_typenames 0 : { *(.debug_typenames) }
   .debug_varnames  0 : { *(.debug_varnames) }
+
+  /* Boot clipboard section */
+  .boot_clipboard_section (NOLOAD) :
+  {
+      . = ORIGIN(BOOTCLPBRD);
+      KEEP(*(.boot_clipboard*))
+  } > BOOTCLPBRD
 }
 

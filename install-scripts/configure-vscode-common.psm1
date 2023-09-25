@@ -13,7 +13,8 @@ $hex2dfuPattern = "<absolute-path-to-hex2dfu-mind-the-forward-slashes>"
 $srecordPattern = "<absolute-path-to-srecord-folder-mind-the-forward-slashes>"
 
 $riscvToolchainPattern = "<absolute-path-to-riscv-toolchain-folder-mind-the-forward-slashes>"
-$riscvTolchainPath = "D:\kendryte-toolchain\bin" # replace later
+$riscvToolchainPath = "D:\kendryte-toolchain\bin" # replace later
+
 function Get-RepoPath {
     return Join-Path -Path $PSScriptRoot -ChildPath "\.." -Resolve
 }
@@ -73,7 +74,7 @@ function Update-Paths {
     }
 
     # replace risv toolchain  pattern
-    $content = $content -replace $riscvToolchainPattern, $riscvTolchainPath.Replace('\', '/')
+    $content = $content -replace $riscvToolchainPattern, $riscvToolchainPath.Replace('\', '/')
 
     $content = $content -replace $repoRootPattern, $(Get-RepoPath).Replace('\', '/')
     

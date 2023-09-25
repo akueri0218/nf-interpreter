@@ -9,7 +9,7 @@ MEMORY
    * Memory with CPU cache.
    *6M CPU SRAM
    */
-  RAM (wxa!ri) : ORIGIN = 0x80000030, LENGTH = (6 * 1024 * 1024 - 48) /* 6M - 48 bytes */
+  RAM (wxa!ri) : ORIGIN = 0x80000000, LENGTH = (6 * 1024 * 1024 - 128) /* 6M - 48 bytes */
   /*
    * Memory without CPU cache
    * 6M CPU SRAM
@@ -17,7 +17,7 @@ MEMORY
   RAM_NOCACHE (wxa!ri) : ORIGIN = 0x40000000, LENGTH = (6 * 1024 * 1024)
 
   /* nano Framework specific region */
-  BOOTCLPBRD (rwx) : ORIGIN = 0x80000000, LENGTH = 0x00000030 /* 48 bytes */
+  BOOTCLPBRD (rwx) : ORIGIN = 0x805FFF80, LENGTH = 0x00000080 /* 128 bytes */
 
   /*
   CONFIG_FLASH
@@ -30,6 +30,11 @@ MEMORY
 
 PROVIDE( _ram_end    = ORIGIN(RAM) + LENGTH(RAM) );
 PROVIDE( _stack_size = 1 << 16 );
+
+__clrHeap_start__ = ORIGIN(RAM);
+__clrHeap_size__  = LENGTH(RAM);
+__flash_start__ = ORIGIN(FLASH);
+__flash_end__   = ORIGIN(FLASH) + LENGTH(FLASH);
 
 /*
  * The OUTPUT_ARCH command specifies the machine architecture where the

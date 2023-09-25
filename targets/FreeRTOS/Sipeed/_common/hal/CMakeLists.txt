@@ -1,5 +1,7 @@
 #project(hal)
 
+message("-- * hal")
+
 # create hal library
 FILE(GLOB_RECURSE LIB_SRC_NOASM
         "${CMAKE_CURRENT_LIST_DIR}/*.cpp"

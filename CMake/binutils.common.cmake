@@ -173,6 +173,10 @@ macro(nf_add_common_sources)
     # sources specific to nanoBooter
     if(${NFACS_TARGET} STREQUAL ${NANOBOOTER_PROJECT_NAME})
 
+        target_link_libraries(${NFACS_TARGET}.elf
+            ${NFACS_EXTRA_LIBRARIES}
+        )
+
         target_sources(${NFACS_TARGET}.elf PUBLIC
             ${NANOBOOTER_PROJECT_SOURCES}
             ${WireProtocol_SOURCES}
@@ -492,7 +496,7 @@ macro(nf_setup_target_build_common)
         nf_add_platform_packages(TARGET ${NANOBOOTER_PROJECT_NAME})
         nf_add_platform_dependencies(${NANOBOOTER_PROJECT_NAME})
 
-        nf_add_common_sources(TARGET ${NANOBOOTER_PROJECT_NAME})
+        nf_add_common_sources(TARGET ${NANOBOOTER_PROJECT_NAME} EXTRA_LIBRARIES ${NFSTBC_BOOTER_EXTRA_LIBRARIES})
         nf_add_platform_sources(${NANOBOOTER_PROJECT_NAME})
 
         # include directories for nanoBooter
@@ -540,7 +544,7 @@ macro(nf_setup_target_build_common)
     nf_add_platform_packages(TARGET ${NANOCLR_PROJECT_NAME})
     nf_add_platform_dependencies(${NANOCLR_PROJECT_NAME})
 
-    nf_add_common_sources(TARGET ${NANOCLR_PROJECT_NAME} EXTRA_LIBRARIES ${CLR_EXTRA_LIBRARIES})
+    nf_add_common_sources(TARGET ${NANOCLR_PROJECT_NAME} EXTRA_LIBRARIES ${NFSTBC_CLR_EXTRA_LIBRARIES})
     nf_add_platform_sources(${NANOCLR_PROJECT_NAME})
 
     # include directories for nanoCLR

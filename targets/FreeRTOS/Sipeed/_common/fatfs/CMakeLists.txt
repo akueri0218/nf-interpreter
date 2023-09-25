@@ -1,4 +1,4 @@
-PROJECT(fatfs)
+# PROJECT(fatfs)
 
 SET(FATFS_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -8,7 +8,7 @@ SET(fatfs_SRCS
     ${FATFS_DIR}/source/ffunicode.c
 )
 
-INCLUDE_DIRECTORIES(${SDK_ROOT}/lib/freertos/include ${SDK_ROOT}/lib/freertos/conf ${SDK_ROOT}/lib/freertos/portable)
+INCLUDE_DIRECTORIES(${FREERTOS_INCLUDE})
 ADD_LIBRARY(fatfs STATIC ${fatfs_SRCS})
 
 TARGET_INCLUDE_DIRECTORIES(fatfs PUBLIC ${FATFS_DIR}/source)
