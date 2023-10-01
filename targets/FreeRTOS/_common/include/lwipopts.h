@@ -79,7 +79,11 @@
  * already use it.
  */
 #ifndef MEM_LIBC_MALLOC
+#if defined(__riscv64)
+#define MEM_LIBC_MALLOC 1
+#else
 #define MEM_LIBC_MALLOC 0
+#endif
 #endif
 
 /**
@@ -101,7 +105,11 @@
  *    2 byte alignment -> \#define MEM_ALIGNMENT 2
  */
 #ifndef MEM_ALIGNMENT
+#if defined(__riscv64)
+#define MEM_ALIGNMENT 8
+#else
 #define MEM_ALIGNMENT 4
+#endif
 #endif
 
 /**
@@ -308,8 +316,12 @@
  * sys_thread_new() when the thread is created.
  */
 #ifndef TCPIP_THREAD_STACKSIZE
+#if defined(__riscv64)
+#define TCPIP_THREAD_STACKSIZE 10240
+#else
 #define TCPIP_THREAD_STACKSIZE 1024
 #endif
+#endif // __riscv64 */
 
 /**
  * TCPIP_THREAD_PRIO: The priority assigned to the main tcpip thread.
@@ -326,7 +338,11 @@
  * sys_mbox_new() when tcpip_init is called.
  */
 #ifndef TCPIP_MBOX_SIZE
+#if defined(__riscv64)
+#define TCPIP_MBOX_SIZE 40
+#else
 #define TCPIP_MBOX_SIZE MEMP_NUM_PBUF
+#endif
 #endif
 
 /**
@@ -362,7 +378,11 @@
  * to sys_mbox_new() when the recvmbox is created.
  */
 #ifndef DEFAULT_UDP_RECVMBOX_SIZE
+#if defined(__riscv64)
+#define DEFAULT_UDP_RECVMBOX_SIZE 1600
+#else
 #define DEFAULT_UDP_RECVMBOX_SIZE 12
+#endif
 #endif
 
 /**
@@ -371,7 +391,11 @@
  * to sys_mbox_new() when the recvmbox is created.
  */
 #ifndef DEFAULT_TCP_RECVMBOX_SIZE
+#if defined(__riscv64)
+#define DEFAULT_TCP_RECVMBOX_SIZE 1600
+#else
 #define DEFAULT_TCP_RECVMBOX_SIZE 40
+#endif
 #endif
 
 /**
@@ -380,7 +404,11 @@
  * sys_mbox_new() when the acceptmbox is created.
  */
 #ifndef DEFAULT_ACCEPTMBOX_SIZE
+#if defined(__riscv64)
+#define DEFAULT_ACCEPTMBOX_SIZE 8000
+#else
 #define DEFAULT_ACCEPTMBOX_SIZE 12
+#endif
 #endif
 
 /*
@@ -488,5 +516,19 @@
 #ifndef LWIP_MDNS_RESPONDER
 #define LWIP_MDNS_RESPONDER 1
 #endif
+
+#if defined(__riscv64)
+/**
+ * LWIP_COMPAT_SOCKETS==1: Enable BSD-style sockets functions names through defines.
+ * LWIP_COMPAT_SOCKETS==2: Same as ==1 but correctly named functions are created.
+ * While this helps code completion, it might conflict with existing libraries. (only used if you use sockets.c)
+*/
+#ifndef LWIP_COMPAT_SOCKETS
+#define LWIP_COMPAT_SOCKETS 0
+#endif
+
+
+
+#endif // __riscv64 */
 
 #endif // _LWIPOPTS_H */

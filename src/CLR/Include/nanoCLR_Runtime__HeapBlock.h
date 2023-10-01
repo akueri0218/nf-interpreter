@@ -66,7 +66,11 @@
 //
 struct CLR_RT_HeapBlock_Raw
 {
+#if defined(__riscv64)
+    CLR_UINT32 data[6];
+#else
     CLR_UINT32 data[3];
+#endif
 };
 
 #ifdef __GNUC__

@@ -226,9 +226,15 @@ typedef int SOCK_SOCKET;
 
 #define SOCK__IOW(x, y, t) (SOCK_IOC_IN | (((long)sizeof(t) & SOCK_IOCPARM_MASK) << 16) | ((x) << 8) | (y))
 //
+#if defined(__riscv64)
+#define SOCK_FIONREAD SOCK__IOR('f', 127, u_int) /* get # bytes to read */
+#define SOCK_FIONBIO  SOCK__IOW('f', 126, u_int) /* set/clear non-blocking i/o */
+#define SOCK_FIOASYNC SOCK__IOW('f', 125, u_int) /* set/clear async i/o */
+#else
 #define SOCK_FIONREAD SOCK__IOR('f', 127, u_long) /* get # bytes to read */
 #define SOCK_FIONBIO  SOCK__IOW('f', 126, u_long) /* set/clear non-blocking i/o */
 #define SOCK_FIOASYNC SOCK__IOW('f', 125, u_long) /* set/clear async i/o */
+#endif
 //
 
 #define SOCK_FD_SETSIZE    256
@@ -261,7 +267,11 @@ typedef struct GNU_PACKED SOCK_in_addr
             u_short s_w1, s_w2;
         } S_un_w;
 
+#if defined(__riscv64)
+        u_int S_addr;
+#else
         u_long S_addr;
+#endif
     } S_un;
 } SOCK_in_addr;
 

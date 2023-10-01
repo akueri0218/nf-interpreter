@@ -10,7 +10,12 @@
 
 void HAL_AssertEx()
 {
+#if defined(__arm__)
     __BKPT(0);
+#elif defined(__riscv64)
+    asm volatile("ebreak");
+#endif
+
     while (true)
     { /*nop*/
     }
@@ -20,7 +25,12 @@ void HAL_AssertEx()
 
 void HARD_Breakpoint()
 {
+#if defined(__arm__)
     __BKPT(0);
+#elif defined(__riscv64)
+    asm volatile("ebreak");
+#endif
+
     while (true)
     { /*nop*/
     }

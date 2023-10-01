@@ -11,7 +11,11 @@
 #include <stddef.h>
 
 #if defined (__GNUC__)
+#if defined(__riscv64)
+#define __int64 long
+#else
 #define __int64 long long
+#endif
 #undef NULL
 #endif
 
