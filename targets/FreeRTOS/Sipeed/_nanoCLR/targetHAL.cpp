@@ -57,7 +57,6 @@ void nanoHAL_Initialize()
 
     // initialize block storage devices
     BlockStorage_AddDevices();
-
     BlockStorageList_InitializeDevices();
 
     // clear managed heap region
@@ -76,8 +75,9 @@ void nanoHAL_Initialize()
     // no PAL events required until now
     // PalEvent_Initialize();
 
+    // TODO: undo commented out when enable network
     // Init Networking
-    Network_Initialize();
+    //Network_Initialize();
 
     // Start Network Debugger
     // SOCKETS_DbgInitialize( 0 );
@@ -98,7 +98,7 @@ void nanoHAL_Uninitialize()
         }
     }
 
-    SOCKETS_CloseConnections();
+    // SOCKETS_CloseConnections();
 
 #if !defined(HAL_REDUCESIZE)
     // TODO need to call this but it's preventing the debug session from starting

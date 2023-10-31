@@ -62,8 +62,8 @@
 
 #include "ethernetif.h"
 
-#include "fsl_enet.h"
-#include "fsl_phy.h"
+// #include "fsl_enet.h"
+// #include "fsl_phy.h"
 
 /*******************************************************************************
  * Definitions

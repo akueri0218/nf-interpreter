@@ -17,35 +17,34 @@
 
 #include <WireProtocol_ReceiverThread.h>
 #include <nanoCLR_Application.h>
-// #include "Target_BlockStorage_iMXRTFlashDriver.h"
+#include "Target_BlockStorage_w25qxx.h"
 #include "CLR_Startup_Thread.h"
 
-#include <stdio.h>
+#include "fpioa_config.h"
+#include <devices.h>
+
+void* __dso_handle;
 
 // configure heap memory
-uint8_t ucHeap[configTOTAL_HEAP_SIZE];
+extern uint8_t ucHeap[configTOTAL_HEAP_SIZE];
 
-#define LED_GPIO     GPIO1
-#define LED_GPIO_PIN (9U)
+handle_t gpiohs;
+handle_t gpio;
+
+extern void CLRStartupThread(void *argument);
 
 int main(void)
 {
-    printf("hello AI world\n");
+    // hardware inited in _init_bsp()
+    w25qxx_InitializeDevice(NULL);
 
-    // BOARD_InitBootPins();
-    // BOARD_InitBootClocks();
-    // BOARD_InitBootPeripherals();
-    // BOARD_InitSEMC();
-    // BOARD_USDHCClockConfiguration();
-    // BOARD_InitRTC();
-    // iMXRTFlexSPIDriver_InitializeDevice(NULL);
+    gpiohs = io_open("/dev/gpio0");
+    gpio  = io_open("/dev/gpio1");
+    
+    uarths_init_extra();
 
-    // xTaskCreate(ReceiverThread, "ReceiverThread", 2048, NULL, configMAX_PRIORITIES - 1, NULL);
-    // xTaskCreate(CLRStartupThread, "CLRStartupThread", 8192, NULL, configMAX_PRIORITIES - 2, NULL);
-    // xTaskCreate(SdCardThread, "SDCardThread", configMINIMAL_STACK_SIZE + 100, NULL, configMAX_PRIORITIES - 2, NULL);
-    // vTaskStartScheduler();
+    xTaskCreate(ReceiverThread, "ReceiverThread", 2048, NULL, configMAX_PRIORITIES - 1, NULL);
+    xTaskCreate(CLRStartupThread, "CLRStartupThread", 8192, NULL, configMAX_PRIORITIES - 2, NULL);
 
-    // for (;;)
-    //     ;
-    return 0;
+    vTaskDelete(NULL);
 }

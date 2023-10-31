@@ -351,6 +351,100 @@ void uart_set_read_timeout(handle_t file, size_t millisecond)
     uart->set_read_timeout(millisecond);
 }
 
+/* UARTHS */
+ringbuffer_t *uarths_recv_buff;
+SemaphoreHandle_t uarths_receive_event;
+
+int uarths_write_ringbuff(uint8_t rdata)
+{
+    ringbuffer_t *ring_buff = uarths_recv_buff;
+
+    if (ring_buff->length >= UARTHS_RINGBUFF_LEN)
+        return -1;
+
+    ring_buff->ring_buffer[ring_buff->tail] = rdata;
+    ring_buff->tail = (ring_buff->tail + 1) % UARTHS_RINGBUFF_LEN;
+    ring_buff->length++;
+    return 0;
+}
+
+size_t uarths_read_ringbuff(uint8_t *rData, size_t len)
+{
+    ringbuffer_t *ring_buff = uarths_recv_buff;
+    size_t cnt = 0;
+    while (len)
+    {
+        if(ring_buff->length)
+        {
+            *(rData++) = ring_buff->ring_buffer[ring_buff->head];
+            ring_buff->head = (ring_buff->head + 1) % UARTHS_RINGBUFF_LEN;
+            ring_buff->length--;
+            cnt++;
+            len--;
+        }
+        else
+        {
+            if(xSemaphoreTake(uarths_receive_event, portMAX_DELAY) == pdTRUE)
+            {
+                continue;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+    }
+
+    return cnt;
+}
+
+static void on_irq_uarths_recv(void* userdata)
+{
+    uint8_t data = 0;
+
+    while(uarths_read_byte(&data))
+    {
+        uarths_write_ringbuff(data);
+    }
+
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+    xSemaphoreGiveFromISR(uarths_receive_event, &xHigherPriorityTaskWoken);
+    if (xHigherPriorityTaskWoken)
+    {
+        portYIELD_FROM_ISR();
+    }
+}
+
+size_t uarths_read(uint8_t* buffer, size_t len)
+{
+    return uarths_read_ringbuff(buffer, len);
+}
+
+void uarths_write(uint8_t *buffer, size_t len)
+{
+    for(int i = 0; i < len; i++)
+    {
+        uarths_write_byte(*buffer++);
+    }
+}
+
+void uarths_init_extra()
+{
+    uarths_init();
+
+    ringbuffer_t *ring_buff = (ringbuffer_t*)malloc(sizeof(ringbuffer_t));
+    ring_buff->head = 0;
+    ring_buff->tail = 0;
+    ring_buff->length = 0;
+    uarths_recv_buff = ring_buff;
+
+    uarths_receive_event = xSemaphoreCreateBinary();
+
+    pic_set_irq_handler(IRQN_UARTHS_INTERRUPT, on_irq_uarths_recv, NULL);
+    pic_set_irq_priority(IRQN_UARTHS_INTERRUPT, 1);
+    pic_set_irq_enable(IRQN_UARTHS_INTERRUPT, 1);
+}
+
 /* GPIO */
 
 uint32_t gpio_get_pin_count(handle_t file)
@@ -387,6 +481,12 @@ void gpio_set_pin_value(handle_t file, uint32_t pin, gpio_pin_value_t value)
 {
     COMMON_ENTRY(gpio);
     gpio->set_pin_value(pin, value);
+}
+
+gpio_pin_value_t gpio_toggle_pin_value(handle_t file, uint32_t pin)
+{
+    COMMON_ENTRY(gpio);
+    return gpio->toggle_pin_value(pin);
 }
 
 /* I2C */
@@ -510,6 +610,13 @@ void spi_dev_fill(handle_t file, uint32_t instruction, uint32_t address, uint32_
 {
     COMMON_ENTRY(spi_device);
     return spi_device->fill(instruction, address, value, count);
+}
+
+/*  Added */
+void spi_dev_init_xip(handle_t file)
+{
+    COMMON_ENTRY(spi_device);
+    return spi_device->init_xip();
 }
 
 /* DVP */

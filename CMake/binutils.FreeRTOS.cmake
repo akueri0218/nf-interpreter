@@ -136,7 +136,10 @@ macro(nf_add_platform_dependencies target)
                     ${FATFS_INCLUDE_DIRS}
                     ${CMAKE_CURRENT_BINARY_DIR}
                     ${CMAKE_SOURCE_DIR}/targets/FreeRTOS/Sipeed/_fatfs
-                    ${CMAKE_BINARY_DIR}/targets/${RTOS}/${TARGET_BOARD})
+                    ${CMAKE_BINARY_DIR}/targets/${RTOS}/${TARGET_BOARD}
+                # EXTRA_LIBRARIES
+                    # "m;freertos;atomic;bsp;c;stdc++;drivers;posix;hal;"
+                )
             
             add_dependencies(${target}.elf nano::NF_NativeAssemblies)
 

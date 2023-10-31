@@ -12,6 +12,7 @@
 #include <WireProtocol_MonitorCommands.h>
 #include <target_board.h>
 
+#include <sysctl.h>
 #include "w25qxx.h"
 
 #define FLASH_ERASED_WORD 0xFFFFFFFF
@@ -64,7 +65,7 @@ int Monitor_Reboot(WP_Message *message)
         {
             // RESET CPU to load nanoCLR
             // because we are using CMSIS it's recommended to make use of the CMSIS API
-            NVIC_SystemReset();
+            sysctl_reset(SYSCTL_RESET_SOC);
         }
     }
 

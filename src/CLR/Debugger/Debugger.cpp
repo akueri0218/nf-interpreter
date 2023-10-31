@@ -1480,7 +1480,7 @@ bool CLR_DBG_Debugger::Debugging_Execution_QueryCLRCapabilities(WP_Message *msg)
     uint32_t count = 0xFF;
 
     // set the compiler info string here
-#if defined(__GNUC__)
+#if defined(__GNUC__) & defined(__arm__)
 #define COMPILER_INFO "GNU ARM GCC"
     const size_t len = MIN(sizeof(COMPILER_INFO), sizeof(reply.u_SoftwareVersion.CompilerInfo) - 1);
 #else

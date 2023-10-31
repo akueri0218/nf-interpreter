@@ -105,6 +105,29 @@ void uart_config(handle_t file, uint32_t baud_rate, uint32_t databits, uart_stop
 void uart_set_read_timeout(handle_t file, size_t millisecond);
 
 /**
+ * @brief       Receive from the UARTHS
+ *
+ * @param[out]  buffer          The destination buffer
+ * @param[in]   len             Maximum bytes to read
+ *
+ * @return      Actual bytes read
+ */
+size_t uarths_read(uint8_t* buffer, size_t len);
+
+/**
+ * @brief       Write to the UARTHS
+ *
+ * @param[in]   buffer      The source buffer
+ * @param[in]   len         Bytes to write
+ */
+void uarths_write(uint8_t *buffer, size_t len);
+
+/**
+ * @brief       Initialize UARTHS device
+ */
+void uarths_init_extra();
+
+/**
  * @brief       Get the pin count of a GPIO controller
  *
  * @param[in]   file        The GPIO controller handle
@@ -159,6 +182,16 @@ gpio_pin_value_t gpio_get_pin_value(handle_t file, uint32_t pin);
  * @param[in]   value       The value to be set
  */
 void gpio_set_pin_value(handle_t file, uint32_t pin, gpio_pin_value_t value);
+
+/**
+ * @brief       Toggle the value of a GPIO pin
+ *
+ * @param[in]   file        The GPIO controller handle
+ * @param[in]   pin         The GPIO pin
+ * 
+ * @return      The updated value of the pin
+ */
+gpio_pin_value_t gpio_toggle_pin_value(handle_t file, uint32_t pin);
 
 /**
  * @brief       Register and open a I2C device
@@ -358,6 +391,16 @@ int spi_dev_transfer_sequential(handle_t file, const uint8_t *write_buffer, size
  * @param[in]   count           THe count of frames
  */
 void spi_dev_fill(handle_t file, uint32_t instruction, uint32_t address, uint32_t value, size_t count);
+
+/*  Added */
+
+/**
+ * @brief       Enable XIP mode to a SPI device
+ *
+ * @param[in]   file            The SPI device handle
+ */
+
+void spi_dev_init_xip(handle_t file);
 
 /**
  * @brief       Configure a DVP device

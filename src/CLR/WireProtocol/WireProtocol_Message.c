@@ -10,6 +10,9 @@
 #include <targetHAL_Time.h>
 #include "WireProtocol_Message.h"
 
+// debug
+// #include <stdio.h>
+
 // from nanoHAL_Time.h
 #define TIME_CONVERSION__TO_SYSTICKS 10000
 
@@ -242,6 +245,8 @@ void WP_Message_Process()
     {
         ASSERT(_rxState >= ReceiveState_Idle && _rxState <= ReceiveState_CompletePayload);
 
+        // debug
+        // printf("rxState: %d\n", _rxState);
 #ifdef DEBUG
         // store this here to debug issues with wrong sequence of state machine
         _rxStatePrev = _rxState;

@@ -43,7 +43,7 @@
 #define ETHERNETIF_H
 
 #include "lwip/err.h"
-#include "fsl_enet.h"
+// #include "fsl_enet.h"
 
 /*******************************************************************************
  * Definitions

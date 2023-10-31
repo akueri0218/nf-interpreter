@@ -8,8 +8,8 @@
 #include <nanoCLR_Types.h>
 #include <nanoHAL_Time.h>
 
-#if defined(NXP_USE_RTC)
-    #include "fsl_snvs_lp.h"
+#if defined(K210_USE_RTC)
+    //#include "fsl_snvs_lp.h"
 #else
     #include "time.h"
     #include <sys/time.h>
@@ -18,7 +18,7 @@
 // Returns the current date time from the RTC 
 uint64_t  HAL_Time_CurrentDateTime(bool datePartOnly)
 {
-#ifdef NXP_USE_RTC
+#ifdef K210_USE_RTC
     
     SYSTEMTIME st;
     snvs_lp_srtc_datetime_t rtcDate;
@@ -73,7 +73,7 @@ void HAL_Time_SetUtcTime(uint64_t utcTime)
 
     HAL_Time_ToSystemTime(utcTime, &systemTime);
 
-  #if defined(NXP_USE_RTC)
+  #if defined(K210_USE_RTC)
 
     snvs_lp_srtc_datetime_t srtcDate;
 

@@ -5,6 +5,8 @@
 
 #if defined(CPU_MIMXRT1062CVL5A)
 #include "MIMXRT1062.h"
+#elif defined(CPU_K210)
+#include <sysctl.h>
 #endif
 
 __attribute__((used)) void prvGetRegistersFromStack(unsigned int *pulFaultStackAddress)
@@ -43,10 +45,16 @@ __attribute__((used)) void prvGetRegistersFromStack(unsigned int *pulFaultStackA
 
     // forces a breakpoint causing the debugger to stop
     // if no debugger is attached this is ignored
+#if defined(__arm__)
     __asm volatile("BKPT #0\n");
 
     // If no debugger connected, just reset the board
     NVIC_SystemReset();
+#elif defined(__riscv64)
+    __asm volatile("ebreak\n");
+
+    sysctl_reset(SYSCTL_RESET_SOC);
+#endif
 
     for (;;)
         ;
@@ -54,6 +62,7 @@ __attribute__((used)) void prvGetRegistersFromStack(unsigned int *pulFaultStackA
 
 __attribute__((naked, aligned(4))) void HardFault_Handler(void)
 {
+#if defined(__arm__)
     __asm volatile(
                    " tst lr, #4                                                \n"
                    " ite eq                                                    \n"
@@ -64,4 +73,9 @@ __attribute__((naked, aligned(4))) void HardFault_Handler(void)
                    " bx r2                                                     \n"
                    " handler2_address_const: .word prvGetRegistersFromStack    \n"                  ""
     );
+#elif defined(__riscv64)
+    __asm volatile(
+        "" // # TODO: 実装
+    );
+#endif
 }

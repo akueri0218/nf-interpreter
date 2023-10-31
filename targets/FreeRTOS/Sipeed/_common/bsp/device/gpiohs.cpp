@@ -147,6 +147,14 @@ public:
         set_bit_idx(gpiohs_.output_val.u32, pin, value);
     }
 
+    virtual gpio_pin_value_t toggle_pin_value(uint32_t pin)
+    {
+        uint32_t value = get_bit_idx(gpiohs_.input_val.u32, pin);
+        set_bit_idx(gpiohs_.output_val.u32, pin, !value);
+
+        return static_cast<gpio_pin_value_t>(!value);
+    }
+
 private:
     static void gpiohs_pin_on_change_isr(void *userdata)
     {

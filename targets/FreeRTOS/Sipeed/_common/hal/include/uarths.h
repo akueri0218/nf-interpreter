@@ -76,6 +76,8 @@ extern "C" {
 /* IP register */
 #define UARTHS_IP_TXWM    (0x01)
 #define UARTHS_IP_RXWM    (0x02)
+
+#define UARTHS_RINGBUFF_LEN (256)
 /* clang-format on */
 
 typedef struct _uarths_txdata
@@ -170,6 +172,14 @@ typedef struct _uarths
     uarths_div_t div;
 } __attribute__((packed, aligned(4))) uarths_t;
 
+typedef struct _ringbuffer
+{
+    size_t head;
+    size_t tail;
+    size_t length;
+    uint8_t ring_buffer[UARTHS_RINGBUFF_LEN];
+} ringbuffer_t;
+
 /**
  * @brief       Initialization Core UART
  *
@@ -182,10 +192,13 @@ void uarths_init();
 /**
  * @brief       Get a byte from UART
  *
- * @return      byte from UART
+ * @param[out]  data        byte from UART
+ * 
+ * @return      result
+ *     - 1      Success
+ *     - 0      Fail
  */
-
-uint8_t uarths_read_byte();
+uint8_t uarths_read_byte(uint8_t *data);
 
 /**
  * @brief       Put a byte to UART
@@ -200,8 +213,6 @@ void uarths_write_byte(uint8_t value);
  * @param[in]   s       The string to send
  */
 void uarths_puts(const char *s);
-
-size_t uarths_read(uint8_t* buffer, size_t len);
 
 #ifdef __cplusplus
 }

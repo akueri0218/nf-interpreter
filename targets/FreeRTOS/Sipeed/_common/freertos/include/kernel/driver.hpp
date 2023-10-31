@@ -208,6 +208,7 @@ public:
     virtual void set_on_changed(uint32_t pin, gpio_on_changed_t callback, void *userdata) = 0;
     virtual gpio_pin_value_t get_pin_value(uint32_t pin) = 0;
     virtual void set_pin_value(uint32_t pin, gpio_pin_value_t value) = 0;
+    virtual gpio_pin_value_t toggle_pin_value(uint32_t pin) = 0;
 };
 
 class i2c_device_driver : public driver
@@ -249,6 +250,7 @@ public:
     virtual int transfer_full_duplex(gsl::span<const uint8_t> write_buffer, gsl::span<uint8_t> read_buffer) = 0;
     virtual int transfer_sequential(gsl::span<const uint8_t> write_buffer, gsl::span<uint8_t> read_buffer) = 0;
     virtual void fill(uint32_t instruction, uint32_t address, uint32_t value, size_t count) = 0;
+    virtual void init_xip() = 0;
 };
 
 class spi_driver : public driver

@@ -12,11 +12,13 @@
 static LPUART_Type *const lpuart_bases[] = LPUART_BASE_PTRS;
 
 // Static UART config/data structs.
-static NF_PAL_UART Uart_PAL1, Uart_PAL2, Uart_PAL3, Uart_PAL4, Uart_PAL5, Uart_PAL6, Uart_PAL7, Uart_PAL8;
+static NF_PAL_UART Uart_PAL1;
+static NF_PAL_UART Uart_PAL2;
+static NF_PAL_UART Uart_PAL3;
 
 // Array of pointers to above config UART structs.
 NF_PAL_UART *const
-    Uart_PAL[]{NULL, &Uart_PAL1, &Uart_PAL2, &Uart_PAL3, &Uart_PAL4, &Uart_PAL5, &Uart_PAL6, &Uart_PAL7, &Uart_PAL8};
+    Uart_PAL[]{NULL, &Uart_PAL1, &Uart_PAL2, &Uart_PAL3};
 
 // Task firing up event after receiving wanted amount of bytes
 static void vREvent(void *pvParameters)

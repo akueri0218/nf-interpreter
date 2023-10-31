@@ -12,14 +12,14 @@
 extern "C" {
 #endif
 
-bool w25qxxSPIDriver_InitializeDevice(void*);
-bool w25qxxSPIDriver_UninitializeDevice(void*);
-DeviceBlockInfo* w25qxxSPIDriver_GetDeviceInfo(void*);
-bool w25qxxSPIDriver_Read(void*, ByteAddress startAddress, unsigned int numBytes, unsigned char* buffer);
-bool w25qxxSPIDriver_Write(void*, ByteAddress startAddress, unsigned int numBytes, unsigned char* buffer, bool readModifyWrite);
-bool w25qxxSPIDriver_IsBlockErased(void*, ByteAddress blockAddress, unsigned int length);
-bool w25qxxSPIDriver_EraseBlock(void*, ByteAddress address);
-void w25qxxSPIDriver_SetPowerState(void*, unsigned int state);
+bool w25qxx_InitializeDevice(void*);
+bool w25qxx_UninitializeDevice(void*);
+DeviceBlockInfo* w25qxx_GetDeviceInfo(void*);
+bool w25qxx_Read(void*, ByteAddress startAddress, unsigned int numBytes, unsigned char* buffer);
+bool w25qxx_Write(void*, ByteAddress startAddress, unsigned int numBytes, unsigned char* buffer, bool readModifyWrite);
+bool w25qxx_IsBlockErased(void*, ByteAddress blockAddress, unsigned int length);
+bool w25qxx_EraseBlock(void*, ByteAddress address);
+void w25qxx_SetPowerState(void*, unsigned int state);
 
 #ifdef __cplusplus
 }

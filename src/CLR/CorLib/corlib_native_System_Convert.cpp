@@ -39,8 +39,9 @@ HRESULT Library_corlib_native_System_Convert::
     bool isSigned = (bool)stack.Arg1().NumericByRef().u1;
     bool negReturnExpected = false;
 
-    long long minValue = stack.Arg2().NumericByRef().s8;
-    long long maxValue = stack.Arg3().NumericByRef().s8;
+    int64_t minValue = stack.Arg2().NumericByRef().s8;
+    int64_t maxValue = stack.Arg3().NumericByRef().s8;
+
     if (minValue == 0 && maxValue == 0)
     {
         isUInt64 = true;

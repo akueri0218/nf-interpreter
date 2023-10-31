@@ -420,7 +420,7 @@ FIND_PACKAGE_HANDLE_STANDARD_ARGS(NF_NativeAssemblies DEFAULT_MSG NF_NativeAssem
 macro(nf_add_lib_native_assemblies)
 
     # parse arguments
-    cmake_parse_arguments(NFALNA "" "" "EXTRA_INCLUDES;EXTRA_COMPILE_DEFINITIONS" ${ARGN})
+    cmake_parse_arguments(NFALNA "" "" "EXTRA_INCLUDES;EXTRA_COMPILE_DEFINITIONS;EXTRA_LIBRARIES" ${ARGN})
 
     # add this has a library
     set(LIB_NAME NF_NativeAssemblies)
@@ -456,6 +456,12 @@ macro(nf_add_lib_native_assemblies)
         nf_set_compile_options(TARGET ${LIB_NAME} BUILD_TARGET ${NANOCLR_PROJECT_NAME})
         nf_set_compile_definitions(TARGET ${LIB_NAME} EXTRA_COMPILE_DEFINITIONS ${NFALNA_EXTRA_COMPILE_DEFINITIONS} BUILD_TARGET ${NANOCLR_PROJECT_NAME})
         nf_set_link_options(TARGET ${LIB_NAME})
+    endif()
+
+    if(NFALNA_EXTRA_LIBRARIES)
+        target_link_libraries(${LIB_NAME}
+            ${NFALNA_EXTRA_LIBRARIES}
+        )
     endif()
 
     # add alias

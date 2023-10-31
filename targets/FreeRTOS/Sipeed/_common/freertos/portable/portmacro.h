@@ -139,6 +139,9 @@ UBaseType_t uxPortGetCPUClock(void);
 UBaseType_t uxPortIsInISR(void);
 void vPortDebugBreak(void);
 
+/* add */
+#define xPortIsInsideInterrupt() uxPortIsInISR()
+
 #define portGET_PROCESSOR_ID() uxPortGetProcessorId()
 
 #define portDISABLE_INTERRUPTS()                __asm volatile  ( "csrc mstatus,8" )

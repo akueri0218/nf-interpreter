@@ -4,18 +4,22 @@
 // See LICENSE file in the project root for full license information.
 //
 
-// i.MX RT1060 EVK board
-//  User Button (GPIO5-00)    - Pin number 128
-//  Ardunio interface (GPIO1) - Pin number 0 -> 31
+// Maixduino GPIO
+// GPIO00-31 : GPIOHS
+// GPIO32-39 : GPIO
+//
 
-#include "win_dev_gpio_native_target.h"
+#include "sys_dev_gpio_native_target.h"
 #include "nf_rt_events_native.h"
 
 #include "timers.h"
 
-#define GPIO_MAX_PINS    160 // 5 Ports * 32 bits ?
-#define GPIO_BITS_PORT   16  // 16 bits per gpio port
-#define TOTAL_GPIO_PORTS ((GPIO_MAX_PINS + (GPIO_BITS_PORT - 1)) / GPIO_BITS_PORT)
+#include <devices.h>
+
+#define GPIOHS_MAX_PINS  32 
+#define GPIO_MAX_PINS    40 // GPIOHS(32) + GPIO(8) 
+#define GPIO_BITS_PORT   32 // 32 bits per gpio port
+#define TOTAL_GPIO_PORTS ((GPIO_MAX_PINS + (GPIO_BITS_PORT - 1)) / GPIO_BITS_PORT) // 2 ports
 
 // Structure to hold information about input pin
 struct gpio_input_state
@@ -39,7 +43,7 @@ typedef gpio_input_state *statePortArray[GPIO_BITS_PORT];
 static statePortArray *port_array[TOTAL_GPIO_PORTS];
 
 // Array of bits for saving reserved state
-static uint16_t pinReserved[TOTAL_GPIO_PORTS];
+static uint32_t pinReserved[TOTAL_GPIO_PORTS];
 
 // this is an utility define to get a port number from our "encoded" pin number
 // pin 0 -> (GPIO_MAX_PINS - 1)
@@ -48,11 +52,65 @@ static uint16_t pinReserved[TOTAL_GPIO_PORTS];
 #define GetIoBit(pinNumber)       (pinNumber % GPIO_BITS_PORT)
 #define IsValidGpioPin(pinNumber) (pinNumber < GPIO_MAX_PINS)
 
+// gpio controller
+extern handle_t gpiohs;
+extern handle_t gpio;
+
+#define GetGpioHandle(pinNumber) (pinNumber < GPIO_BITS_PORT ? gpiohs : gpio)
+
+void Gpio_IRQHandler(uint32_t pin, void* userdata)
+{
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+
+    // only gpiohs port supports callback
+    if(pin >= GPIOHS_MAX_PINS)
+    {
+        return;
+    }
+
+    statePortArray *states = port_array[0];
+
+    if(states)
+    {
+        gpio_input_state *pState = (gpio_input_state*)states[GetIoBit(pin)];
+
+        if(pState)
+        {
+            // Ignore any pin changes during debounce
+            if(!pState->waitingDebounce)
+            {
+                // If debounce timer defined then first wait for it to expire
+                if(pState->debounceMs > 0)
+                {
+                    pState->waitingDebounce = true;
+
+                    // Start Debounce timer
+                    xTimerChangePeriodFromISR(
+                        pState->debounceTimer,
+                        pdMS_TO_TICKS(pState->debounceMs),
+                        &xHigherPriorityTaskWoken);
+                }
+                else if(pState->isrPtr)
+                {
+                    gpio_pin_value_t pinVal = gpio_get_pin_value(GetGpioHandle(pState->pinNumber), GetIoBit(pState->pinNumber));
+                    
+                    pState->isrPtr(pState->pinNumber, pinVal ? GpioPinValue_High : GpioPinValue_Low, pState->param);
+                }
+            }
+        }
+    }
+
+    if(xHigherPriorityTaskWoken)
+    {
+        portYIELD_FROM_ISR();
+    }
+}
+
 void Gpio_DebounceHandler(TimerHandle_t xTimer)
 {
     gpio_input_state *pState = (gpio_input_state *)pvTimerGetTimerID(xTimer);
 
-    bool actual = (GpioPinValue)GPIO_PinRead(GPIO_BASE(pState->pinNumber), GPIO_PIN(pState->pinNumber));
+    bool actual = (GpioPinValue)gpio_get_pin_value(GetGpioHandle(pState->pinNumber), GetIoBit(pState->pinNumber));
 
     if (actual == pState->expected)
     {
@@ -65,137 +123,6 @@ void Gpio_DebounceHandler(TimerHandle_t xTimer)
     }
 
     pState->waitingDebounce = false;
-}
-
-void GPIO_Main_IRQHandler(int portIndex, GPIO_Type *portBase)
-{
-    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-    // Get interrupting pins
-    uint32_t intPins = GPIO_PortGetInterruptFlags(portBase);
-
-    // clear the interrupt status
-    GPIO_PortClearInterruptFlags(portBase, intPins);
-
-    if (portIndex % 2)
-    {
-        // use the upper 16 bits for odd ports
-        intPins >>= 16;
-    }
-    else
-    {
-        // use the lower 16 bits for even ports
-        intPins &= 0xFFFF;
-    }
-
-    // This port been initialised ?
-    statePortArray *inputStates = port_array[portIndex];
-    if (inputStates)
-    {
-        uint32_t bitNumber = 0;
-
-        // Handle all pins with pending interrupt
-        while (intPins)
-        {
-            if (intPins & 0x01)
-            {
-                // Interupt on pin ?
-                gpio_input_state *pState = (*inputStates)[bitNumber];
-
-                // Do we have gpio_input_state setup for this pin ?
-                if (pState)
-                {
-                    // Ignore any pin changes during debounce
-                    if (!pState->waitingDebounce)
-                    {
-                        // If debounce timer defined then first wait for it to expire
-                        if (pState->debounceMs > 0)
-                        {
-                            pState->waitingDebounce = true;
-
-                            // Start Debounce timer
-                            xTimerChangePeriodFromISR(
-                                pState->debounceTimer,
-                                pdMS_TO_TICKS(pState->debounceMs),
-                                &xHigherPriorityTaskWoken);
-                        }
-                        else
-                        {
-                            GpioPinValue PinState =
-                                (GpioPinValue)GPIO_PinRead(GPIO_BASE(pState->pinNumber), GPIO_PIN(pState->pinNumber));
-                            pState->isrPtr(pState->pinNumber, PinState, pState->param);
-                        }
-                    }
-                } // if pin setup in nanoFramework
-            }     // if interrupt
-
-            intPins >>= 1;
-            bitNumber++;
-        } // while
-    }
-
-    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
-
-    // Add for ARM errata 838869, affects Cortex-M4, Cortex-M4F Store immediate overlapping
-    // exception return operation might vector to incorrect interrupt
-#if defined __CORTEX_M && (__CORTEX_M == 4U)
-    __DSB();
-#endif
-}
-
-extern "C"
-{
-    // Gpio ISR handler for GPIO port 1 bits 0-15
-    void GPIO1_Combined_0_15_IRQHandler(void)
-    {
-        GPIO_Main_IRQHandler(0, GPIO1);
-    }
-    // Gpio ISR handler for GPIO port 1 bits 16-31
-    void GPIO1_Combined_16_31_IRQHandler(void)
-    {
-        GPIO_Main_IRQHandler(1, GPIO1);
-    }
-    // Gpio ISR handler for GPIO port 2 bits 0-15
-    void GPIO2_Combined_0_15_IRQHandler(void)
-    {
-        GPIO_Main_IRQHandler(2, GPIO2);
-    }
-    // Gpio ISR handler for GPIO port 2 bits 16-31
-
-    // TODO: this handler is used to sdcard detect
-    // void GPIO2_Combined_16_31_IRQHandler(void)
-    // {
-    // 	GPIO_Main_IRQHandler( 3, GPIO2 );
-    // }
-    // Gpio ISR handler for GPIO port 3 bits 0-15
-    void GPIO3_Combined_0_15_IRQHandler(void)
-    {
-        GPIO_Main_IRQHandler(4, GPIO3);
-    }
-    // Gpio ISR handler for GPIO port 3 bits 16-31
-    void GPIO3_Combined_16_31_IRQHandler(void)
-    {
-        GPIO_Main_IRQHandler(5, GPIO3);
-    }
-    // Gpio ISR handler for GPIO port 4 bits 0-15
-    void GPIO4_Combined_0_15_IRQHandler(void)
-    {
-        GPIO_Main_IRQHandler(6, GPIO4);
-    }
-    // Gpio ISR handler for GPIO port 4 bits 16-31
-    void GPIO4_Combined_16_31_IRQHandler(void)
-    {
-        GPIO_Main_IRQHandler(7, GPIO4);
-    }
-    // Gpio ISR handler for GPIO port 5 bits 0-15
-    void GPIO5_Combined_0_15_IRQHandler(void)
-    {
-        GPIO_Main_IRQHandler(8, GPIO5);
-    }
-    // Gpio ISR handler for GPIO port 5 bits 16-31
-    void GPIO5_Combined_16_31_IRQHandler(void)
-    {
-        GPIO_Main_IRQHandler(9, GPIO5);
-    }
 }
 
 // Get pointer to gpio_input_state for Gpio pin
@@ -259,9 +186,11 @@ void DeleteInputState(GPIO_PIN pinNumber)
             xTimerDelete(pState->debounceTimer, 100);
         }
 
-        // Remove interrupt associatted with pin
-        gpio_pin_config_t config = {kGPIO_DigitalInput, 0, kGPIO_NoIntmode};
-        GPIO_PinInit(GPIO_BASE(pinNumber), GPIO_PIN(pinNumber), &config);
+        // interrupt handler availables only gpiohs pins
+        if(pinNumber > GPIOHS_MAX_PINS)
+        {
+            gpio_set_on_changed(gpiohs, pinNumber, (gpio_on_changed_t)NULL, NULL);
+        }
 
         platform_free(pState);
         (*inputStates)[bit] = NULL;
@@ -270,6 +199,9 @@ void DeleteInputState(GPIO_PIN pinNumber)
 
 bool CPU_GPIO_Initialize()
 {
+    configASSERT(gpiohs);
+    configASSERT(gpio);
+
     // All port ptrs are null
     memset(port_array, 0, sizeof(port_array));
 
@@ -279,8 +211,12 @@ bool CPU_GPIO_Initialize()
     return true;
 }
 
+// System.Device.Gpio
 bool CPU_GPIO_Uninitialize()
 {
+    io_close(gpiohs);
+    io_close(gpio);
+
     // First remove any active pin states
     for (int pinNumber = 0; pinNumber < GPIO_MAX_PINS; pinNumber++)
     {
@@ -308,8 +244,8 @@ bool CPU_GPIO_ReservePin(GPIO_PIN pinNumber, bool fReserve)
     if (!IsValidGpioPin(pinNumber))
         return false;
 
-    int port = pinNumber >> 4;
-    int bit = 1 << (pinNumber & 0x0F);
+    int port = GetIoPort(pinNumber);
+    int bit = 1 << (GetIoBit(pinNumber));
 
     GLOBAL_LOCK();
 
@@ -332,6 +268,7 @@ bool CPU_GPIO_ReservePin(GPIO_PIN pinNumber, bool fReserve)
     return true;
 }
 
+// System.Device.Gpio
 // Return if Pin is reserved
 bool CPU_GPIO_PinIsBusy(GPIO_PIN pinNumber)
 {
@@ -339,10 +276,13 @@ bool CPU_GPIO_PinIsBusy(GPIO_PIN pinNumber)
     if (!IsValidGpioPin(pinNumber))
         return false;
 
-    int port = pinNumber >> 4, sh = pinNumber & 0x0F;
+    int port = GetIoPort(pinNumber);
+    int sh = GetIoBit(pinNumber);
+
     return (pinReserved[port] >> sh) & 1;
 }
 
+// System.Device.Gpio
 // Return maximum number of pins
 int32_t CPU_GPIO_GetPinCount()
 {
@@ -352,19 +292,21 @@ int32_t CPU_GPIO_GetPinCount()
 // Get current state of pin
 GpioPinValue CPU_GPIO_GetPinState(GPIO_PIN pinNumber)
 {
-    return (GpioPinValue)GPIO_PinRead(GPIO_BASE(pinNumber), GPIO_PIN(pinNumber));
+    return (GpioPinValue)gpio_get_pin_value(GetGpioHandle(pinNumber), GetIoBit(pinNumber));
 }
 
 // Set Pin state
 void CPU_GPIO_SetPinState(GPIO_PIN pinNumber, GpioPinValue PinState)
 {
-    GPIO_PinWrite(GPIO_BASE(pinNumber), GPIO_PIN(pinNumber), PinState);
+    gpio_pin_value_t val = PinState ? GPIO_PV_HIGH : GPIO_PV_LOW;
+
+    gpio_set_pin_value(GetGpioHandle(pinNumber), GetIoBit(pinNumber), val);
 }
 
 // Toggle pin state
 void CPU_GPIO_TogglePinState(GPIO_PIN pinNumber)
 {
-    GPIO_PortToggle(GPIO_BASE(pinNumber), 0x1u << GPIO_PIN(pinNumber));
+    gpio_toggle_pin_value(GetGpioHandle(pinNumber), GetIoBit(pinNumber));
 }
 
 //
@@ -396,16 +338,42 @@ bool CPU_GPIO_EnableInputPin(
 
     if (pinISR != NULL && (pState->isrPtr == NULL))
     {
-        // enable interupt mode with correct edge
-        gpio_pin_config_t config = {kGPIO_DigitalInput, 0, kGPIO_IntRisingOrFallingEdge};
-        GPIO_PinInit(GPIO_BASE(pinNumber), GPIO_PIN(pinNumber), &config);
+        // gpio_set_pin_edge, gpio_set_on_changed are supported only for gpiohs
+        if(GetIoPort(pinNumber) == 0)
+        {
+            // TODO: set pin isr
+            gpio_set_on_changed(GetIoPort(pinNumber), GetIoBit(pinNumber), (gpio_on_changed_t)(Gpio_IRQHandler), NULL);
 
-        // Enable GPIO pin interrupt
-        IRQn_Type isrNo = (IRQn_Type)(GPIO1_Combined_0_15_IRQn + GetIoPort(pinNumber));
-        NVIC_SetPriority(isrNo, 8U);
-        EnableIRQ(isrNo);
-        GPIO_PortEnableInterrupts(GPIO_BASE(pinNumber), 1U << GetIoBit(pinNumber));
-        GPIO_PortClearInterruptFlags(GPIO_BASE(pinNumber), 1U << GetIoBit(pinNumber));
+            gpio_pin_edge_t edge;
+
+            switch(intEdge)
+            {
+                case GPIO_INT_NONE:
+                    edge = GPIO_PE_NONE;
+                    break;
+                case GPIO_INT_EDGE_LOW:
+                    edge = GPIO_PE_FALLING;
+                    break;
+                case GPIO_INT_EDGE_HIGH:
+                    edge = GPIO_PE_RISING;
+                    break;
+                case GPIO_INT_EDGE_BOTH:
+                    edge = GPIO_PE_BOTH;
+                    break;
+                default:
+                /* NOT supported */
+                //case GPIO_INT_LEVEL_HIGH:
+                //case GPIO_INT_LEVEL_LOW:
+                    intEdge = GPIO_INT_NONE;
+                    edge = GPIO_PE_NONE;
+                    break;
+            }
+
+            gpio_set_pin_edge(GetGpioHandle(pinNumber), GetIoBit(pinNumber), edge);
+        }
+        else {
+            intEdge = GPIO_INT_NONE;
+        }
 
         // store parameters & configs
         pState->isrPtr = pinISR;
@@ -442,11 +410,10 @@ bool CPU_GPIO_EnableInputPin(
     }
     else if (pinISR == NULL && (pState->isrPtr != NULL))
     {
-        // there is no managed handler setup anymore
-        // remove INT handler
-
-        // disable interrupt
-        GPIO_PortDisableInterrupts(GPIO_BASE(pinNumber), 1U << GetIoBit(pinNumber));
+        if(GetIoPort(pinNumber) == 0)
+        {
+            gpio_set_on_changed(GetGpioHandle(pinNumber), GetIoBit(pinNumber), NULL, (void*)NULL);
+        }
 
         // clear parameters & configs
         pState->isrPtr = NULL;
@@ -491,10 +458,10 @@ void CPU_GPIO_DisablePin(GPIO_PIN pinNumber, GpioPinDriveMode driveMode, uint32_
 
     DeleteInputState(pinNumber);
 
-    if (alternateFunction)
-    {
-        GPIO_PinMux(GPIO_PORT(pinNumber), GPIO_PIN(pinNumber), alternateFunction);
-    }
+    // if (alternateFunction)
+    // {
+    //     GPIO_PinMux(GPIO_PORT(pinNumber), GPIO_PIN(pinNumber), alternateFunction);
+    // }
 
     GLOBAL_UNLOCK();
 
@@ -509,50 +476,37 @@ bool CPU_GPIO_SetDriveMode(GPIO_PIN pinNumber, GpioPinDriveMode driveMode)
     if (!IsValidGpioPin(pinNumber))
         return false;
 
-    gpio_pin_direction_t direction;
-    uint32_t pinConfig;
+    gpio_drive_mode_t mode;
 
-    switch (driveMode)
+    switch(driveMode)
     {
         case GpioPinDriveMode_Input:
-            direction = kGPIO_DigitalInput;
-            pinConfig = GPIO_IO;
+            mode = GPIO_DM_INPUT;
             break;
-
         case GpioPinDriveMode_InputPullDown:
-            direction = kGPIO_DigitalInput;
-            pinConfig = GPIO_IN_PULLDOWN;
+            mode = GPIO_DM_INPUT_PULL_DOWN;
             break;
-
         case GpioPinDriveMode_InputPullUp:
-            direction = kGPIO_DigitalInput;
-            pinConfig = GPIO_IN_PULLUP;
+            mode = GPIO_DM_INPUT_PULL_UP;
             break;
-
         case GpioPinDriveMode_Output:
-            direction = kGPIO_DigitalOutput;
-            pinConfig = GPIO_IO;
+            mode = GPIO_DM_OUTPUT;
             break;
-
-        case GpioPinDriveMode_OutputOpenDrain:
-            direction = kGPIO_DigitalOutput;
-            pinConfig = GPIO_OUT_OPENDRAIN;
-            break;
-
         default:
-            // all other modes are NOT supported
+        /* NOT supported */
+        //case GpioPinDriveMode_OutputOpenDrain:
+        //case GpioPinDriveMode_OutputOpenDrainPullUp:
+        //case GpioPinDriveMode_OutputOpenSource:
+        //case GpioPinDriveMode_OutputOpenSourcePullDown:
             return false;
     }
 
-    gpio_pin_config_t config = {direction, 0, kGPIO_NoIntmode};
-
-    GPIO_PinMux(GPIO_PORT(pinNumber), GPIO_PIN(pinNumber), 0x5u);
-    GPIO_PinConfig(GPIO_PORT(pinNumber), GPIO_PIN(pinNumber), pinConfig);
-    GPIO_PinInit(GPIO_BASE(pinNumber), GPIO_PIN(pinNumber), &config);
+    gpio_set_drive_mode(GetGpioHandle(pinNumber), GetIoBit(pinNumber), mode);
 
     return true;
 }
 
+// System.Device.Gpio
 bool CPU_GPIO_DriveModeSupported(GPIO_PIN pinNumber, GpioPinDriveMode driveMode)
 {
     // Check if valid pin number
@@ -563,8 +517,7 @@ bool CPU_GPIO_DriveModeSupported(GPIO_PIN pinNumber, GpioPinDriveMode driveMode)
 
     // check if the requested drive mode is supported
     if ((driveMode == GpioPinDriveMode_Input) || (driveMode == GpioPinDriveMode_InputPullDown) ||
-        (driveMode == GpioPinDriveMode_InputPullUp) || (driveMode == GpioPinDriveMode_Output) ||
-        (driveMode == GpioPinDriveMode_OutputOpenDrain))
+        (driveMode == GpioPinDriveMode_InputPullUp) || (driveMode == GpioPinDriveMode_Output))
     {
         driveModeSupported = true;
     }

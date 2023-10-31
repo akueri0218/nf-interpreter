@@ -7,9 +7,9 @@
 
 extern struct BlockStorageDevice    Device_BlockStorage;
 extern struct MEMORY_MAPPED_NOR_BLOCK_CONFIG   Device_BlockStorageConfig;
-extern IBlockStorageDevice iMXRT_BlockStorageInterface;
+extern IBlockStorageDevice w25qxx_BlockStorageInterface;
 
 void BlockStorage_AddDevices()
 {
-    BlockStorageList_AddDevice( (BlockStorageDevice*)&Device_BlockStorage, &iMXRT_BlockStorageInterface, &Device_BlockStorageConfig, false);
+    BlockStorageList_AddDevice( (BlockStorageDevice*)&Device_BlockStorage, &w25qxx_BlockStorageInterface, &Device_BlockStorageConfig, false);
 }

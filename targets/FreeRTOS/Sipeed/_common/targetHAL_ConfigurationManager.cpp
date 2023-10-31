@@ -5,7 +5,7 @@
 
 #include <nanoHAL.h>
 #include <nanoHAL_v2.h>
-#include "Target_BlockStorage_iMXRTFlashDriver.h"
+#include "Target_BlockStorage_w25qxx.h"
 
 // initialization of configuration manager
 void ConfigurationManager_Initialize()
@@ -270,7 +270,7 @@ bool ConfigurationManager_StoreConfigurationBlock(
     }
 
     // copy the config block content to the config block storage
-    success = iMXRTFlexSPIDriver_Write(NULL, storageAddress, blockSize, (unsigned char *)configurationBlock, false);
+    success = w25qxx_Write(NULL, storageAddress, blockSize, (unsigned char *)configurationBlock, false);
 
     // enumeration is required after we are DONE with SUCCESSFULLY storing all the config chunks
     requiresEnumeration = (success && done);
@@ -370,7 +370,7 @@ bool ConfigurationManager_UpdateConfigurationBlock(
         }
 
         // erase config sector
-        if (iMXRTFlexSPIDriver_EraseBlock(NULL, (uint32_t)&__nanoConfig_start__) == TRUE)
+        if (w25qxx_EraseBlock(NULL, (uint32_t)&__nanoConfig_start__) == TRUE)
         {
             // flash block is erased
 
@@ -384,7 +384,7 @@ bool ConfigurationManager_UpdateConfigurationBlock(
             memcpy(blockAddressInCopy, configSectorCopy, blockSize);
 
             // copy the config block copy back to the config block storage
-            success = iMXRTFlexSPIDriver_Write(
+            success = w25qxx_Write(
                 NULL,
                 (uint32_t)&__nanoConfig_start__,
                 sizeOfConfigSector,

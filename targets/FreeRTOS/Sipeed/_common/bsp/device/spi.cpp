@@ -97,6 +97,10 @@ public:
     int transfer_sequential(k_spi_device_driver &device, gsl::span<const uint8_t> write_buffer, gsl::span<uint8_t> read_buffer);
     int read_write(k_spi_device_driver &device, gsl::span<const uint8_t> write_buffer, gsl::span<uint8_t> read_buffer);
     void fill(k_spi_device_driver &device, uint32_t instruction, uint32_t address, uint32_t value, size_t count);
+    
+    /*  Added */
+    void init_xip(k_spi_device_driver &device);
+    
     void slave_config(handle_t gpio_handle, uint8_t int_pin, uint8_t ready_pin, size_t data_bit_length, uint8_t *data, uint32_t len, spi_slave_receive_callback_t callback)
     {
         slave_instance_.s_gpio_driver = system_handle_to_object(gpio_handle).get_object().as<gpio_driver>();
@@ -593,6 +597,13 @@ public:
         spi_->fill(*this, instruction, address, value, count);
     }
 
+    /*  My Code */
+    virtual void init_xip()
+    {
+        spi_->init_xip(*this);
+    }
+    /* !My Code */
+
 private:
     static int get_buffer_width(size_t data_bit_length)
     {
@@ -948,6 +959,76 @@ void k_spi_driver::fill(k_spi_device_driver &device, uint32_t instruction, uint3
     spi_.ssienr = 0x00;
     spi_.dmacr = 0x00;
 }
+
+/*  My Code */
+#define XIP_PREFETCH_DISABLE (0x00)
+#define XIP_PREFETCH_ENABLE  (0x01)
+
+#define XIP_MBL_2            (0x00)
+#define XIP_MBL_4            (0x01)
+#define XIP_MBL_8            (0x02)
+#define XIP_MBL_16           (0x03)
+
+#define CONT_XFER_DISABLE    (0x00)
+#define CONT_XFER_ENABLE     (0x01)
+
+#define INST_DISABLE         (0x00)
+#define INST_ENABLE          (0x01)
+
+#define MD_BITS_DISABLE      (0x00)
+#define MD_BITS_ENABLE       (0x01)
+
+#define ADDR_L24             (0x06)
+
+#define TRANS_TYPE0          (0x00)
+#define TRANS_TYPE1          (0x01)
+#define TRANS_TYPE2          (0x02)
+#define TRANS_TYPE3          (0x03)
+
+void k_spi_driver::init_xip(k_spi_device_driver &device)
+{
+    COMMON_ENTRY;
+    setup_device(device);
+
+    uint32_t inst_l = 0;
+    switch (device.instruction_length_)
+    {
+    case 0:
+        inst_l = 0;
+        break;
+    case 4:
+        inst_l = 1;
+        break;
+    case 8:
+        inst_l = 2;
+        break;
+    case 16:
+        inst_l = 3;
+        break;
+    default:
+        configASSERT("Invalid instruction length");
+        break;
+    }
+
+    //spi_.baudr = 9;
+
+    spi_.imr           = 0x00;
+    spi_.dmacr         = 0x00;
+    spi_.dmatdlr       = 0x10;
+    spi_.ser           = 0x00;
+    spi_.ssienr        = 0x00;
+    spi_.ctrlr0        = (SPI_MODE_0 << 8) | (SPI_FF_QUAD << 22) | (7 << 0);
+    spi_.endian        = 0x00;
+
+    spi_.xip_ctrl = (XIP_PREFETCH_ENABLE << 29) | (XIP_MBL_8 << 26) | (CONT_XFER_ENABLE << 23) |
+        (INST_ENABLE << 22) | (device.wait_cycles_ << 13) | (MD_BITS_ENABLE << 12) | (inst_l << 9) |
+        (ADDR_L24 << 4) | (TRANS_TYPE1 << 2) | (device.frame_format_);
+    spi_.xip_incr_inst = 0xEB; // Fast read quad I/O?
+    spi_.xip_mode_bits = 0x00;
+    spi_.xip_ser       = 0x01;
+    spi_.ssienr        = 0x01;
+}
+/* !My Code */
 
 void k_spi_driver::setup_device(k_spi_device_driver &device)
 {

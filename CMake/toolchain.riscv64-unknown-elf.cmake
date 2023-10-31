@@ -47,7 +47,8 @@ find_program(
    riscv64-unknown-elf-size
    CMAKE_FIND_ROOT_PATH_BOTH)
 
-set(COMMON_FLAGS "-mcmodel=medany -mabi=lp64f -march=rv64imafc -fno-common -ffunction-sections -fdata-sections -fstrict-volatile-bitfields -ffast-math -fno-math-errno -fsingle-precision-constant -O2 -ggdb -Wall -Werror=all -Wno-error=comment -Wno-error=unused-function -Wno-error=unused-but-set-variable -Wno-error=unused-variable -Wno-error=deprecated-declarations -Wno-error=maybe-uninitialized -Wextra -Werror=frame-larger-than=65536 -Wno-unused-parameter -Wno-unused-function -Wno-implicit-fallthrough -Wno-sign-compare -Wno-error=missing-braces")
+# add -Wno-error=implicit-function-declaration
+set(COMMON_FLAGS "-mcmodel=medany -mabi=lp64f -march=rv64imafc -fno-common -ffunction-sections -fdata-sections -fstrict-volatile-bitfields -ffast-math -fno-math-errno -fsingle-precision-constant -O2 -ggdb -Wall -Werror=all -Wno-error=comment -Wno-error=unused-function -Wno-error=unused-but-set-variable -Wno-error=unused-variable -Wno-error=deprecated-declarations -Wno-error=maybe-uninitialized -Wno-error=implicit-function-declaration -Wextra -Werror=frame-larger-than=65536 -Wno-unused-parameter -Wno-unused-function -Wno-implicit-fallthrough -Wno-sign-compare -Wno-error=missing-braces")
 
 set(CMAKE_C_FLAGS "${COMMON_FLAGS} -std=gnu11 -Wno-int-to-pointer-cast -Wno-pointer-to-int-cast -Wno-old-style-declaration" CACHE STRING "C Compiler Base Flags")
 

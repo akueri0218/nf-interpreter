@@ -111,6 +111,17 @@ public:
         set_bit_idx(reg, pin, value);
     }
 
+    virtual gpio_pin_value_t toggle_pin_value(uint32_t pin)
+    {
+        uint32_t dir = get_bit_idx(gpio_.direction.u32, pin);
+        volatile uint32_t *reg = dir ? gpio_.data_output.u32 : gpio_.data_input.u32;
+        configASSERT(dir == 1);
+        uint32_t value = get_bit_idx(reg, pin);
+        set_bit_idx(reg, pin, !value);
+
+        return static_cast<gpio_pin_value_t>(!value);
+    }
+
 private:
     volatile gpio_t &gpio_;
 };

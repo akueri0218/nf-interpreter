@@ -6,6 +6,10 @@
 
 #include <nanoHAL.h>
 
+#if defined(__riscv64)
+#include <printf.h>
+#endif
+
 //--//
 /* STDIO stubs                                                              */
 //--//

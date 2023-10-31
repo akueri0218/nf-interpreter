@@ -10,11 +10,11 @@
 #include <nf_rt_native.h>
 #include <target_platform.h>
 
-#if !defined(K210_USE_RTC) //TODO define 
+#if !defined(K210_USE_RTC)
     #error "Need the RTC to be enabled. Please set CMake option NF_FEATURE_RTC to ON."
 #endif
 
-#include "devices.h"
+#include <devices.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // these functions are the real implementation of the 'weak' ones declared at src\CLR\Runtime.Native\nf_rt_native_nanoFramework_Runtime_Native_Rtc_stubs.cpp //
@@ -25,21 +25,21 @@ HRESULT Library_nf_rt_native_nanoFramework_Runtime_Native_Rtc::Native_RTC_SetSys
 {
     NANOCLR_HEADER();
     {
-        file rtc = io_open("/dev/rtc0");
+        handle_t rtc = io_open("/dev/rtc0");
 
-        struct tm *srtcDate;
+        struct tm srtcDate;
 
-        // tm->tm_year is year since 1900
-        srtcDate->tm_year = (uint16_t)(stack.Arg0().NumericByRef().s4) - 1900;  
-        // tm->tm_mon is month since Janualy
-        srtcDate->tm_mon = (uint8_t) stack.Arg1().NumericByRef().u1 - 1;
-        srtcDate->tm_mday = (uint8_t) stack.Arg2().NumericByRef().u1;   
-        srtcDate->tm_hour = (uint8_t) stack.Arg4().NumericByRef().u1;  
-        srtcDate->tm_min = (uint8_t )stack.Arg5().NumericByRef().u1;
-        srtcDate->tm_sec = (uint8_t) stack.Arg6().NumericByRef().u1; 
+        // tm.tm_year is year since 1900
+        srtcDate.tm_year = (uint16_t)(stack.Arg0().NumericByRef().s4) - 1900;  
+        // tm.tm_mon is month since Janualy
+        srtcDate.tm_mon = (uint8_t) stack.Arg1().NumericByRef().u1 - 1;
+        srtcDate.tm_mday = (uint8_t) stack.Arg2().NumericByRef().u1;   
+        srtcDate.tm_hour = (uint8_t) stack.Arg4().NumericByRef().u1;  
+        srtcDate.tm_min = (uint8_t )stack.Arg5().NumericByRef().u1;
+        srtcDate.tm_sec = (uint8_t) stack.Arg6().NumericByRef().u1; 
 
         // Set new date and start RTC        
-        rtc_set_datetime(rtc, srtcDate);
+        rtc_set_datetime(rtc, &srtcDate);
 
         // Return value to the managed application
         stack.SetResult_Boolean(true);

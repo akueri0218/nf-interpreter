@@ -2,8 +2,9 @@
 // Copyright (c) .NET Foundation and Contributors
 // See LICENSE file in the project root for full license information.
 //
-
+#if !defined(CPU_K210)
 #include "board.h"
+#endif
 
 #include "FreeRTOS.h"
 #include "task.h"

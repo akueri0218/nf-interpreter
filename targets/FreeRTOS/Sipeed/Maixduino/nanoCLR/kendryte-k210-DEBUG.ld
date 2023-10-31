@@ -9,7 +9,7 @@ MEMORY
    * Memory with CPU cache.
    *6M CPU SRAM
    */
-  RAM (wxa!ri) : ORIGIN = 0x80000000, LENGTH = (6 * 1024 * 1024 - 128) /* 6M - 48 bytes */
+  RAM (wxa!ri) : ORIGIN = 0x80000000, LENGTH = (6 * 1024 * 1024) /* 6M */
   /*
    * Memory without CPU cache
    * 6M CPU SRAM
@@ -17,27 +17,19 @@ MEMORY
   RAM_NOCACHE (wxa!ri) : ORIGIN = 0x40000000, LENGTH = (6 * 1024 * 1024)
 
   /* nano Framework specific region */
-  BOOTCLPBRD (rwx) : ORIGIN = 0x805FFF80, LENGTH = 0x00000080 /* 128 bytes */
-
-  CONFIG_FLASH (r) : ORIGIN = 0x547F0000, LENGTH = 0x00010000
-  FLASH (r) : ORIGIN = 0x54800000, LENGTH = (8 * 1024 * 1024) /* 16M - 6M - margin */
-
-  /*
-  CONFIG_FLASH
-  BOARD_FLASH
-  DEPLOYMENT_FLASH
-
-  at k210, flash memory isn't mapped in memory
-  */
+  FLASH (r) : ORIGIN = 0x54800000, LENGTH = (4 * 1024 * 1024) /* 4MB */
+  CONFIG_FLASH (r) : ORIGIN = 0x54C00000, LENGTH = 0x00010000
+  DEPLOYMENT_FLASH (r) : ORIGIN = 0x54D00000, LENGTH = (1 * 1024 * 1024) /* 1MB */
 }
 
 PROVIDE( _ram_end    = ORIGIN(RAM) + LENGTH(RAM) );
 PROVIDE( _stack_size = 1 << 16 );
 
-__clrHeap_start__    = ORIGIN(RAM);
-__clrHeap_size__     = LENGTH(RAM);
 __flash_start__      = ORIGIN(FLASH);
 __flash_end__        = ORIGIN(FLASH) + LENGTH(FLASH);
+__deployment_start__ = ORIGIN(DEPLOYMENT_FLASH);
+__deployment_size__  = LENGTH(DEPLOYMENT_FLASH);
+__deployment_end__   = ORIGIN(DEPLOYMENT_FLASH) + LENGTH(DEPLOYMENT_FLASH);
 __nanoConfig_start__ = ORIGIN(CONFIG_FLASH);
 __nanoConfig_size__  = LENGTH(CONFIG_FLASH);
 __nanoConfig_end__   = ORIGIN(CONFIG_FLASH) + LENGTH(CONFIG_FLASH);
@@ -289,12 +281,5 @@ SECTIONS
   .debug_funcnames 0 : { *(.debug_funcnames) }
   .debug_typenames 0 : { *(.debug_typenames) }
   .debug_varnames  0 : { *(.debug_varnames) }
-
-  /* Boot clipboard section */
-  .boot_clipboard_section (NOLOAD) :
-  {
-      . = ORIGIN(BOOTCLPBRD);
-      KEEP(*(.boot_clipboard*))
-  } > BOOTCLPBRD
 }
 

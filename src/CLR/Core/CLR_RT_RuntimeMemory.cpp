@@ -10,7 +10,11 @@
 
 #define LINK_SIZE_BYTES              4
 #define PAYLOAD_SIZE_BYTES          12
+#if defined(__riscv64)
+#define INTERRUPT_RECORD_SIZE_BYTES 32
+#else
 #define INTERRUPT_RECORD_SIZE_BYTES 24
+#endif
 #define INLINE_SIZE_BYTES           (8 * sizeof(int*) + sizeof(int))
 
 #define ENTRY_SIZE__extrasmall          32

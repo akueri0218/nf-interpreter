@@ -4,19 +4,19 @@
 //
 
 #include <nanoPAL_BlockStorage.h>
-#include <Target_BlockStorage_iMXRTFlashDriver.h>
+#include <Target_BlockStorage_w25qxx.h>
 
 // map here the Block Storage Interface to the iMXRT FlexSPI driver
-IBlockStorageDevice iMXRT_BlockStorageInterface =
+IBlockStorageDevice w25qxx_BlockStorageInterface =
 {                          
-    &iMXRTFlexSPIDriver_InitializeDevice,
-    &iMXRTFlexSPIDriver_UninitializeDevice,
-    &iMXRTFlexSPIDriver_GetDeviceInfo,
-    &iMXRTFlexSPIDriver_Read,
-    &iMXRTFlexSPIDriver_Write,
+    &w25qxx_InitializeDevice,
+    &w25qxx_UninitializeDevice,
+    &w25qxx_GetDeviceInfo,
+    &w25qxx_Read,
+    &w25qxx_Write,
     NULL,
-    &iMXRTFlexSPIDriver_IsBlockErased,
-    &iMXRTFlexSPIDriver_EraseBlock,
+    &w25qxx_IsBlockErased,
+    &w25qxx_EraseBlock,
     NULL,
     NULL
 };

@@ -7,48 +7,54 @@
 // #include "flexspi_nor_flash_ops.h"
 // #include "fsl_cache.h"
 // #include "fsl_flexspi.h"
+
+#include "w25qxx.h"
+#include <devices.h>
+
 #include <nanoPAL_BlockStorage.h>
 #include <targetHAL.h>
 #include <Target_BlockStorage_w25qxx.h>
 
 #include "FreeRTOS.h"
 
-__attribute__((section(".ramfunc.$RAM2"))) bool w25qxxSPIDriver_InitializeDevice(void *context)
+handle_t spi3;
+
+bool w25qxx_InitializeDevice(void *context)
 {
     (void)context;
 
-    flexspi_nor_flash_init(FLEXSPI);
-    flexspi_nor_enable_quad_mode(FLEXSPI);
+    spi3 = io_open("/dev/spi3");
+    configASSERT(spi3);
 
-    DCACHE_CleanInvalidateByRange(FlexSPI_AMBA_BASE, FLASH_SIZE * 1024);
+    w25qxx_init(spi3);
 
     return true;
 }
 
-bool w25qxxSPIDriver_UninitializeDevice(void *context)
+bool w25qxx_UninitializeDevice(void *context)
 {
     (void)context;
 
     return true;
 }
 
-DeviceBlockInfo *w25qxxSPIDriver_GetDeviceInfo(void *context)
+DeviceBlockInfo *w25qxx_GetDeviceInfo(void *context)
 {
     MEMORY_MAPPED_NOR_BLOCK_CONFIG *config = context;
 
     return config->BlockConfig.BlockDeviceInformation;
 }
 
-bool w25qxxSPIDriver_Read(void *context, ByteAddress startAddress, unsigned int numBytes, unsigned char *buffer)
+bool w25qxx_Read(void *context, ByteAddress startAddress, unsigned int numBytes, unsigned char *buffer)
 {
     (void)context;
 
-    memcpy(buffer, (void *)startAddress, numBytes);
+    w25qxx_read_data_xip(startAddress, (uint8_t*)buffer, numBytes);
 
     return true;
 }
 
-bool w25qxxSPIDriver_Write(
+bool w25qxx_Write(
     void *context,
     ByteAddress startAddress,
     unsigned int numBytes,
@@ -64,47 +70,22 @@ bool w25qxxSPIDriver_Write(
     }
     portENTER_CRITICAL();
 
-    for (uint32_t i = 0; i < numBytes;)
-    {
+    w25qxx_write_data(startAddress - (uint32_t)&__flash_start__, (uint8_t*)buffer, numBytes);
 
-        uint32_t length = FLASH_PAGE_SIZE;
-
-        uint32_t bytesToEndOfPage = ((startAddress - (uint32_t)&__flash_start__ + i) % FLASH_PAGE_SIZE);
-
-        if (bytesToEndOfPage != 0)
-        {
-            length -= bytesToEndOfPage;
-        }
-
-        if ((i + length) > numBytes)
-        {
-            length = numBytes - i;
-        }
-
-        status_t status = flexspi_nor_flash_program(
-            FLEXSPI,
-            startAddress - (uint32_t)&__flash_start__ + i,
-            (const uint32_t *)(buffer + i),
-            length);
-
-        if (status != kStatus_Success)
-        {
-            portEXIT_CRITICAL();
-            return false;
-        }
-        i += length;
-    }
-
-    DCACHE_CleanInvalidateByRange(startAddress, numBytes);
     portEXIT_CRITICAL();
     return true;
 }
 
 #define FLASH_ERASED_WORD 0xFFFFFFFF
 
-bool w25qxxSPIDriver_IsBlockErased(void *context, ByteAddress blockAddress, unsigned int length)
+bool w25qxx_IsBlockErased(void *context, ByteAddress blockAddress, unsigned int length)
 {
+    // TODO: implement
+
     (void)context;
+
+    w25qxx_enable_xip();
+
     uint32_t *cursor = (uint32_t *)blockAddress;
     uint32_t *endAddress = (uint32_t *)(blockAddress + length);
     // an erased flash address has to read FLASH_ERASED_WORD
@@ -114,26 +95,31 @@ bool w25qxxSPIDriver_IsBlockErased(void *context, ByteAddress blockAddress, unsi
     {
         if (*cursor++ != FLASH_ERASED_WORD)
         {
+            w25qxx_reset_xip();
+
             // found an address with something other than FLASH_ERASED_WORD!!
             return false;
         }
     }
 
+    w25qxx_reset_xip();
+
     // reached here so the segment must be erased
     return true;
 }
 
-bool w25qxxSPIDriver_EraseBlock(void *context, ByteAddress address)
+bool w25qxx_EraseBlock(void *context, ByteAddress address)
 {
     (void)context;
     portENTER_CRITICAL();
-    status_t status = flexspi_nor_flash_erase_sector(FLEXSPI, address - (uint32_t)&__flash_start__);
+
+    enum w25qxx_status_t status = w25qxx_sector_erase(address - (uint32_t)&__flash_start__);
+
     portEXIT_CRITICAL();
-    if (status != kStatus_Success)
+    if (status != W25QXX_OK)
     {
         return false;
     }
 
-    DCACHE_CleanInvalidateByRange(address, SECTOR_SIZE);
     return true;
 }

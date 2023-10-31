@@ -20,14 +20,16 @@
 
 volatile uarths_t *const uarths = (volatile uarths_t *)UARTHS_BASE_ADDR;
 
-uint8_t uarths_read_byte()
+uint8_t uarths_read_byte(uint8_t* data)
 {
-    while (1)
+    uarths_rxdata_t recv = uarths->rxdata;
+    if (!recv.empty)
     {
-        uarths_rxdata_t recv = uarths->rxdata;
-        if (!recv.empty)
-            return recv.data;
+        *data = recv.data;
+        return 1;
     }
+
+    return 0;
 }
 
 void uarths_write_byte(uint8_t c)
@@ -41,29 +43,6 @@ void uarths_puts(const char *s)
 {
     while (*s)
         uarths_write_byte(*s++);
-}
-
-size_t uarths_read(uint8_t* buffer, size_t len)
-{
-    size_t read = 0;
-
-    uarths_rxdata_t recv = uarths->rxdata;
-    while (len && !recv.empty)
-    {
-        *buffer++ = recv.data;
-        read++;
-        len--;
-        recv = uarths->rxdata;
-    }
-
-    if (len && !read)
-    {
-        *buffer++ = uarths_read_byte();
-        read++;
-        len--;
-    }
-
-    return read;
 }
 
 void uarths_init()

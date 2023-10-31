@@ -205,7 +205,7 @@ bool CLR_Messaging::App_ProcessHeader(void *state, WP_Message *msg)
 
         if (ptr == NULL)
         {
-            TRACE0(TRACE_HEADERS, "Failed to allocate 0x%08X bytes for message payload!\n");
+            TRACE(TRACE_HEADERS, "Failed to allocate 0x%08X bytes for message payload!\n", msg->m_header.m_size);
             return false;
         }
 

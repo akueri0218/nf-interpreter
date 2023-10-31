@@ -4,11 +4,12 @@
 //
 
 #include <nanoHAL_v2.h>
-#include "MIMXRT1062.h"
+//#include "MIMXRT1062.h"
+#include <sysctl.h>
 
 inline void CPU_Reset()
 {
-    NVIC_SystemReset();
+    sysctl_reset(SYSCTL_RESET_SOC);
 };
 
 // CPU sleep is not currently implemented in this target

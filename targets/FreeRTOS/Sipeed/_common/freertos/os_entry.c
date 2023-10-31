@@ -43,6 +43,8 @@ int __attribute__((weak)) configure_fpioa()
     return 0;
 }
 
+extern void receiver_task();
+
 static void main_thunk(void *p)
 {
     /* Register finalization function */
@@ -83,6 +85,7 @@ int os_entry(int (*user_main)(int, char **))
     }
 
     core_sync_awaken((uintptr_t)os_entry_core1);
+
     vTaskStartScheduler();
     return param.ret;
 }

@@ -13,7 +13,7 @@
 #include <target_windows_devices_serialcommunication_config.h>
 #include <win_dev_serial_native.h>
 
-#include "fsl_lpuart.h"
+// #include "fsl_lpuart.h"
 
 typedef struct
 {

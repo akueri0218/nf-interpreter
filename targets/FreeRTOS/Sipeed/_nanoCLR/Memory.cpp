@@ -10,6 +10,6 @@ void HeapLocation(unsigned char*& baseAddress, unsigned int& sizeInBytes)
 {
     NATIVE_PROFILE_PAL_HEAP();
 
-    baseAddress = (unsigned char*)0x80000000U;  //start of SDRAM
-    sizeInBytes = 0x2000000;                    //32MB
+    baseAddress = (unsigned char*)0x80500000;  //start of heap
+    sizeInBytes =   (unsigned int)0x00100000;  
 }
