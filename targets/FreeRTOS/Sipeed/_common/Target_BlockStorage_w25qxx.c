@@ -17,14 +17,11 @@
 
 #include "FreeRTOS.h"
 
-handle_t spi3;
+extern handle_t spi3;
 
 bool w25qxx_InitializeDevice(void *context)
 {
     (void)context;
-
-    spi3 = io_open("/dev/spi3");
-    configASSERT(spi3);
 
     w25qxx_init(spi3);
 
@@ -70,7 +67,7 @@ bool w25qxx_Write(
     }
     portENTER_CRITICAL();
 
-    w25qxx_write_data(startAddress - (uint32_t)&__flash_start__, (uint8_t*)buffer, numBytes);
+    w25qxx_write_data(startAddress - SPI3_BASE_ADDR, (uint8_t*)buffer, numBytes);
 
     portEXIT_CRITICAL();
     return true;
@@ -113,7 +110,7 @@ bool w25qxx_EraseBlock(void *context, ByteAddress address)
     (void)context;
     portENTER_CRITICAL();
 
-    enum w25qxx_status_t status = w25qxx_sector_erase(address - (uint32_t)&__flash_start__);
+    enum w25qxx_status_t status = w25qxx_sector_erase(address - SPI3_BASE_ADDR);
 
     portEXIT_CRITICAL();
     if (status != W25QXX_OK)

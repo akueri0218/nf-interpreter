@@ -31,16 +31,21 @@ extern uint8_t ucHeap[configTOTAL_HEAP_SIZE];
 handle_t gpiohs;
 handle_t gpio;
 
+handle_t spi3;
+
 extern void CLRStartupThread(void *argument);
 
 int main(void)
 {
-    // hardware inited in _init_bsp()
-    w25qxx_InitializeDevice(NULL);
-
+    // hardware initialized in _init_bsp()
+    
     gpiohs = io_open("/dev/gpio0");
     gpio  = io_open("/dev/gpio1");
     
+    spi3 = io_open("/dev/spi3");
+    
+    w25qxx_InitializeDevice(NULL);
+
     uarths_init_extra();
 
     xTaskCreate(ReceiverThread, "ReceiverThread", 2048, NULL, configMAX_PRIORITIES - 1, NULL);

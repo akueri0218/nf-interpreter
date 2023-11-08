@@ -6,7 +6,7 @@
 #include <nanoPAL_BlockStorage.h>
 #include <Target_BlockStorage_w25qxx.h>
 
-// map here the Block Storage Interface to the iMXRT FlexSPI driver
+// map here the Block Storage Interface to the w25qxx flash driver
 IBlockStorageDevice w25qxx_BlockStorageInterface =
 {                          
     &w25qxx_InitializeDevice,
