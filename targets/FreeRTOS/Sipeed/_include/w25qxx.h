@@ -17,8 +17,8 @@
 #include <stdint.h>
 
 /* clang-format off */
-//#define WORK_TRANS_MODE SPI_FF_STANDARD
-#define WORK_TRANS_MODE SPI_FF_DUAL
+#define WORK_TRANS_MODE SPI_FF_STANDARD
+//#define WORK_TRANS_MODE SPI_FF_DUAL
 //#define WORK_TRANS_MODE SPI_FF_QUAD
 
 #define CHIP_SELECT                         1

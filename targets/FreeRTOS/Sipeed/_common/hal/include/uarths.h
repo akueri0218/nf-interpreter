@@ -77,7 +77,7 @@ extern "C" {
 #define UARTHS_IP_TXWM    (0x01)
 #define UARTHS_IP_RXWM    (0x02)
 
-#define UARTHS_RINGBUFF_LEN (256)
+#define UARTHS_RINGBUFF_LEN (512)
 /* clang-format on */
 
 typedef struct _uarths_txdata

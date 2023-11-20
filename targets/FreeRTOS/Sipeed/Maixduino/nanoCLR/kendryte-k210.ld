@@ -9,7 +9,7 @@ MEMORY
    * Memory with CPU cache.
    *6M CPU SRAM
    */
-  RAM (wxa!ri) : ORIGIN = 0x80000000, LENGTH = (6 * 1024 * 1024) /* 6M - 48 bytes */
+  RAM (wxa!ri) : ORIGIN = 0x80000000, LENGTH = (6 * 1024 * 1024) /* 5M */
   /*
    * Memory without CPU cache
    * 6M CPU SRAM
@@ -18,8 +18,8 @@ MEMORY
 
   /* nano Framework specific region */
   FLASH (r) : ORIGIN = 0x54800000, LENGTH = (4 * 1024 * 1024) /* 4MB */
-  CONFIG_FLASH (r) : ORIGIN = 0x54C00000, LENGTH = 0x00010000
-  DEPLOYMENT_FLASH (r) : ORIGIN = 0x54D00000, LENGTH = (1 * 1024 * 1024) /* 1MB */
+  CONFIG_FLASH (r) : ORIGIN = 0x54C00000, LENGTH = 0x00010000 /* 64kB */
+  DEPLOYMENT_FLASH (r) : ORIGIN = 0x54C10000, LENGTH = (1 * 1024 * 1024) /* 1MB */
 }
 
 PROVIDE( _ram_end    = ORIGIN(RAM) + LENGTH(RAM) );

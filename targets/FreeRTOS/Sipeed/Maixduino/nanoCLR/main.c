@@ -51,5 +51,5 @@ int main(void)
     xTaskCreate(ReceiverThread, "ReceiverThread", 2048, NULL, configMAX_PRIORITIES - 1, NULL);
     xTaskCreate(CLRStartupThread, "CLRStartupThread", 8192, NULL, configMAX_PRIORITIES - 2, NULL);
 
-    vTaskDelete(NULL);
+    vTaskDelete(NULL); 
 }

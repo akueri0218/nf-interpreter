@@ -27,7 +27,7 @@ const BlockRegionInfo BlockRegions[] =
 
 const DeviceBlockInfo Device_BlockInfo =
 {
-    (MediaAttribute_SupportsXIP),           // w25qxx flash memory supports XIP
+    (0),                                    // w25qxx flash memory doesnt support XIP
     2,                                      // UINT32 BytesPerSector
     ARRAYSIZE_CONST_EXPR(BlockRegions),     // UINT32 NumRegions;
     (BlockRegionInfo*)BlockRegions,         // const BlockRegionInfo* pRegions;

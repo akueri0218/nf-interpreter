@@ -1621,24 +1621,31 @@ HRESULT CLR_RT_Assembly::CreateInstance(const CLR_RECORD_ASSEMBLY *header, CLR_R
     {
         CLR_RT_Assembly::Offsets offsets;
 
-        offsets.iBase = ROUNDTOMULTIPLE(sizeof(CLR_RT_Assembly), CLR_UINT32);
+#if defined(__riscv64)
+#define ALIGNMENT_TYPE CLR_UINT64
+#else
+#define ALIGNMENT_TYPE CLR_UINT32
+#endif
+
+
+        offsets.iBase = ROUNDTOMULTIPLE(sizeof(CLR_RT_Assembly), ALIGNMENT_TYPE);
         offsets.iAssemblyRef = ROUNDTOMULTIPLE(
             skeleton->m_pTablesSize[TBL_AssemblyRef] * sizeof(CLR_RT_AssemblyRef_CrossReference),
-            CLR_UINT32);
+            ALIGNMENT_TYPE);
         offsets.iTypeRef =
-            ROUNDTOMULTIPLE(skeleton->m_pTablesSize[TBL_TypeRef] * sizeof(CLR_RT_TypeRef_CrossReference), CLR_UINT32);
+            ROUNDTOMULTIPLE(skeleton->m_pTablesSize[TBL_TypeRef] * sizeof(CLR_RT_TypeRef_CrossReference), ALIGNMENT_TYPE);
         offsets.iFieldRef =
-            ROUNDTOMULTIPLE(skeleton->m_pTablesSize[TBL_FieldRef] * sizeof(CLR_RT_FieldRef_CrossReference), CLR_UINT32);
+            ROUNDTOMULTIPLE(skeleton->m_pTablesSize[TBL_FieldRef] * sizeof(CLR_RT_FieldRef_CrossReference), ALIGNMENT_TYPE);
         offsets.iMethodRef = ROUNDTOMULTIPLE(
             skeleton->m_pTablesSize[TBL_MethodRef] * sizeof(CLR_RT_MethodRef_CrossReference),
-            CLR_UINT32);
+            ALIGNMENT_TYPE);
         offsets.iTypeDef =
-            ROUNDTOMULTIPLE(skeleton->m_pTablesSize[TBL_TypeDef] * sizeof(CLR_RT_TypeDef_CrossReference), CLR_UINT32);
+            ROUNDTOMULTIPLE(skeleton->m_pTablesSize[TBL_TypeDef] * sizeof(CLR_RT_TypeDef_CrossReference), ALIGNMENT_TYPE);
         offsets.iFieldDef =
-            ROUNDTOMULTIPLE(skeleton->m_pTablesSize[TBL_FieldDef] * sizeof(CLR_RT_FieldDef_CrossReference), CLR_UINT32);
+            ROUNDTOMULTIPLE(skeleton->m_pTablesSize[TBL_FieldDef] * sizeof(CLR_RT_FieldDef_CrossReference), ALIGNMENT_TYPE);
         offsets.iMethodDef = ROUNDTOMULTIPLE(
             skeleton->m_pTablesSize[TBL_MethodDef] * sizeof(CLR_RT_MethodDef_CrossReference),
-            CLR_UINT32);
+            ALIGNMENT_TYPE);
 
         if (skeleton->m_header->numOfPatchedMethods > 0)
         {
@@ -1646,13 +1653,13 @@ HRESULT CLR_RT_Assembly::CreateInstance(const CLR_RECORD_ASSEMBLY *header, CLR_R
         }
 
 #if !defined(NANOCLR_APPDOMAINS)
-        offsets.iStaticFields = ROUNDTOMULTIPLE(skeleton->m_iStaticFields * sizeof(CLR_RT_HeapBlock), CLR_UINT32);
+        offsets.iStaticFields = ROUNDTOMULTIPLE(skeleton->m_iStaticFields * sizeof(CLR_RT_HeapBlock), ALIGNMENT_TYPE);
 #endif
 
 #if defined(NANOCLR_ENABLE_SOURCELEVELDEBUGGING)
         offsets.iDebuggingInfoMethods = ROUNDTOMULTIPLE(
             skeleton->m_pTablesSize[TBL_MethodDef] * sizeof(CLR_RT_MethodDef_DebuggingInfo),
-            CLR_UINT32);
+            ALIGNMENT_TYPE);
 #endif //#if defined(NANOCLR_ENABLE_SOURCELEVELDEBUGGING)
 
         size_t iTotalRamSize = offsets.iBase + offsets.iAssemblyRef + offsets.iTypeRef + offsets.iFieldRef +

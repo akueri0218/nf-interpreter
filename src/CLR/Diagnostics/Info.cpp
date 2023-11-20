@@ -7,6 +7,10 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+#if defined(__riscv64)
+#include <stdio.h>
+#endif
+
 #if defined(_WIN32)
 
 #include <iostream>
@@ -257,6 +261,10 @@ int CLR_Debug::PrintfV(const char *format, va_list arg)
 {
     NATIVE_PROFILE_CLR_DIAGNOSTICS();
 
+#if defined(__riscv64)
+    return vprintf(format, arg);
+#endif
+
 #if defined(_WIN32)
     char buffer[512];
     char *szBuffer = buffer;
@@ -302,7 +310,7 @@ int CLR_Debug::Printf(const char *format, ...)
     int chars;
 
     va_start(arg, format);
-
+    
     chars = CLR_Debug::PrintfV(format, arg);
 
     va_end(arg);

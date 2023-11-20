@@ -46,7 +46,21 @@ bool w25qxx_Read(void *context, ByteAddress startAddress, unsigned int numBytes,
 {
     (void)context;
 
-    w25qxx_read_data_xip(startAddress, (uint8_t*)buffer, numBytes);
+    uint32_t addr = startAddress - SPI3_BASE_ADDR;
+    uint8_t *ptr = buffer;
+    uint32_t length = 2040;
+
+    while(numBytes)
+    {
+        if(numBytes < 2040)
+            length = numBytes;
+
+        w25qxx_read_data(addr, (uint8_t*)ptr, length);
+
+        addr += length;
+        ptr += length;
+        numBytes -= length;
+    }
 
     return true;
 }

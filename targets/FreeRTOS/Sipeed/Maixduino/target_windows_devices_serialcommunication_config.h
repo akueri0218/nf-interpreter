@@ -4,5 +4,5 @@
 //
 
 /* tx/rx buffer size: 256 bytes */
-#define UART_TX_BUFER_SIZE  256
-#define UART_RX_BUFER_SIZE  256
+#define UART_TX_BUFER_SIZE  512
+#define UART_RX_BUFER_SIZE  512
