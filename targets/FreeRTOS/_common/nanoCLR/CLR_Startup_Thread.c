@@ -2,7 +2,7 @@
 // Copyright (c) .NET Foundation and Contributors
 // See LICENSE file in the project root for full license information.
 //
-#if !defined(CPU_K210)
+#if defined(CPU_MIMXRT1062CVL5A)
 #include "board.h"
 #endif
 
