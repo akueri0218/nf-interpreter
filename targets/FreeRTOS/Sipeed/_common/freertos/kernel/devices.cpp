@@ -128,7 +128,7 @@ void install_drivers()
     fft_file_ = io_open("/dev/fft0");
     aes_file_ = io_open("/dev/aes0");
     sha256_file_ = io_open("/dev/sha256");
-    kpu_file_ = io_open("/dev/kpu0");
+    //kpu_file_ = io_open("/dev/kpu0");
 }
 
 static _file *io_alloc_file(object_accessor<object_access> object)

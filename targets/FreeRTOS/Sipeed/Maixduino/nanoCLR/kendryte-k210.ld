@@ -238,8 +238,13 @@ SECTIONS
    */
   . = ALIGN(64);
   _end = .; PROVIDE( _end = ABSOLUTE(.) );
+
+  PROVIDE( __ClrHeapTop = ABSOLUTE(.) + _stack_size * 5);
+  PROVIDE( __ClrHeapSize  = 2 * 1024 * 1024 );
+  PROVIDE( __ClrHeapEnd = __ClrHeapTop + __ClrHeapSize);
+
   /* Leave 2 holes for stack & TLS, the size can set in kconfig */
-  PROVIDE( _heap_start = ABSOLUTE(.) + _stack_size * 5 );
+  PROVIDE( _heap_start = __ClrHeapEnd );
   PROVIDE( _tp0 = (_end + 63) & (-64) );
   PROVIDE( _tp1 = _tp0 + _stack_size );
   PROVIDE( _sp0 = _tp0 + _stack_size );
