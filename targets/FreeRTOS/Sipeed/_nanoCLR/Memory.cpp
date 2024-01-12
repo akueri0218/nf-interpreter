@@ -6,13 +6,13 @@
 
 #include <nanoHAL.h>
 
-extern int _heap_start;
-extern int _heap_end;
+extern int __ClrHeapTop;
+extern int __ClrHeapSize;
 
 void HeapLocation(unsigned char*& baseAddress, unsigned int& sizeInBytes)
 {
     NATIVE_PROFILE_PAL_HEAP();
 
-    baseAddress = (unsigned char*)0x80400000;  // start of heap
-    sizeInBytes =   (unsigned int)0x00200000;  // 2MB  
+    baseAddress = (unsigned char*)&__ClrHeapTop;  // start of heap
+    sizeInBytes =   (unsigned int)&__ClrHeapSize;  // 2MB  
 }

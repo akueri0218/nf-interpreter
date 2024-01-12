@@ -23,14 +23,13 @@
 #include "fpioa_config.h"
 #include <devices.h>
 
-void* __dso_handle;
-
 // configure heap memory
 extern uint8_t ucHeap[configTOTAL_HEAP_SIZE];
 
 handle_t gpiohs;
 handle_t gpio;
 
+handle_t spi0;
 handle_t spi3;
 
 extern void CLRStartupThread(void *argument);
@@ -42,6 +41,7 @@ int main(void)
     gpiohs = io_open("/dev/gpio0");
     gpio  = io_open("/dev/gpio1");
     
+    spi0 = io_open("/dev/spi0");
     spi3 = io_open("/dev/spi3");
     
     w25qxx_InitializeDevice(NULL);
