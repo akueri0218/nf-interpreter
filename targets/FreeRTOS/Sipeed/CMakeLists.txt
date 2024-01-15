@@ -6,8 +6,8 @@
 include(FetchContent)
 include(binutils.common)
 
-set(FATFS_SOURCE ${CMAKE_CURRENT_LIST_DIR}/_common/fatfs)
-set(LWIP_SOURCE ${CMAKE_CURRENT_LIST_DIR}/_common/lwip)
+set(FATFS_SOURCE ${CMAKE_CURRENT_LIST_DIR}/_common/lib/fatfs)
+set(LWIP_SOURCE ${CMAKE_CURRENT_LIST_DIR}/_common/lib/lwip)
 
 # check if FATFS_SOURCE was specified or if it's empty (default is empty)
 set(NO_FATFS_SOURCE TRUE)

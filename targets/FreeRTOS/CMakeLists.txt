@@ -18,7 +18,7 @@ include(binutils.FreeRTOS)
 set(BASE_PATH_FOR_PLATFORM ${CMAKE_CURRENT_SOURCE_DIR} PARENT_SCOPE)
 
 if(${TARGET_BOARD} MATCHES "Maixduino")
-    set(RTOS_SOURCE_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/Sipeed/_common/freertos")
+    set(RTOS_SOURCE_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/Sipeed/_common/lib/freertos")
     set(RTOS_VERSION "V10.0.1-kernel-only")
 endif()
 

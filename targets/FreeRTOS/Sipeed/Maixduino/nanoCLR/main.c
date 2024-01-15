@@ -23,6 +23,9 @@
 #include "fpioa_config.h"
 #include <devices.h>
 
+// debug
+// #include <stdio.h>
+
 // configure heap memory
 extern uint8_t ucHeap[configTOTAL_HEAP_SIZE];
 
