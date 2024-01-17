@@ -89,3 +89,18 @@ HRESULT Library_nanoFramework_Maixduino_nanoFramework_Maixduino_LCD::DrawText_Na
     }
     NANOCLR_NOCLEANUP();
 }
+
+HRESULT Library_nanoFramework_Maixduino_nanoFramework_Maixduino_LCD::DrawPicture___STATIC__VOID__SZARRAY_U1( CLR_RT_StackFrame& stack )
+{
+    NANOCLR_HEADER(); hr = S_OK;
+    {
+
+        CLR_RT_TypedArray_UINT8 param0;
+        NANOCLR_CHECK_HRESULT( Interop_Marshal_UINT8_ARRAY( stack, 0, param0 ) );
+
+        LCD::DrawPicture( param0, hr );
+        NANOCLR_CHECK_HRESULT( hr );
+
+    }
+    NANOCLR_NOCLEANUP();
+}

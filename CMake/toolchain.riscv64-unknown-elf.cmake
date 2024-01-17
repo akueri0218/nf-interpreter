@@ -52,7 +52,7 @@ set(COMMON_FLAGS "-mcmodel=medany -mabi=lp64f -march=rv64imafc -fno-common -ffun
 
 set(CMAKE_C_FLAGS "${COMMON_FLAGS} -std=gnu11 -Wno-int-to-pointer-cast -Wno-pointer-to-int-cast -Wno-old-style-declaration" CACHE STRING "C Compiler Base Flags")
 
-set(CMAKE_CXX_FLAGS "${COMMON_FLAGS} -std=gnu++17 -fpermissive -Wno-class-memaccess -fno-use-cxa-atexit" CACHE STRING "C++ Compiler Base Flags")
+set(CMAKE_CXX_FLAGS "${COMMON_FLAGS} -std=gnu++17 -fpermissive -Wno-class-memaccess" CACHE STRING "C++ Compiler Base Flags")
 
 execute_process(COMMAND ${CMAKE_C_COMPILER} -print-file-name=crt0.o OUTPUT_STRIP_TRAILING_WHITESPACE OUTPUT_VARIABLE CRT0_OBJ)
 execute_process(COMMAND ${CMAKE_C_COMPILER} -print-file-name=crtbegin.o OUTPUT_STRIP_TRAILING_WHITESPACE OUTPUT_VARIABLE CRTBEGIN_OBJ)

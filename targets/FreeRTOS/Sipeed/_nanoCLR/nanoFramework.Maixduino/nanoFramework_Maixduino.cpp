@@ -14,17 +14,31 @@ static const CLR_RT_MethodHandler method_lookup[] =
 {
     NULL,
     NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    Library_nanoFramework_Maixduino_nanoFramework_Maixduino_KPU::LoadModel_Native___STATIC__VOID__SZARRAY_U1,
+    NULL,
+    Library_nanoFramework_Maixduino_nanoFramework_Maixduino_KPU::Run_Native___STATIC__SZARRAY_U1__SZARRAY_U1,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    Library_nanoFramework_Maixduino_nanoFramework_Maixduino_KPUImage::LoadKPUImage___STATIC__SZARRAY_U1__I4,
     Library_nanoFramework_Maixduino_nanoFramework_Maixduino_LCD::Inittialize___STATIC__VOID,
     Library_nanoFramework_Maixduino_nanoFramework_Maixduino_LCD::Clear___STATIC__VOID__U2,
     Library_nanoFramework_Maixduino_nanoFramework_Maixduino_LCD::DrawRect___STATIC__VOID__U2__U2__U2__U2__U2,
     Library_nanoFramework_Maixduino_nanoFramework_Maixduino_LCD::DrawText_Native___STATIC__VOID__U2__U2__SZARRAY_U1__U2,
     NULL,
+    Library_nanoFramework_Maixduino_nanoFramework_Maixduino_LCD::DrawPicture___STATIC__VOID__SZARRAY_U1,
 };
 
 const CLR_RT_NativeAssemblyData g_CLR_AssemblyNative_nanoFramework_Maixduino =
 {
     "nanoFramework.Maixduino",
-    0x51F81579,
+    0x999343AE,
     method_lookup,
     { 1, 0, 0, 0 }
 };

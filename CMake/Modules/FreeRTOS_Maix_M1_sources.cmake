@@ -12,9 +12,25 @@ list(APPEND FreeRTOS_INCLUDE_DIRS ${TARGET_BASE_LOCATION})
 
 # TODO change
 set(FreeRTOS_PORT_SRCS
+    core_sync.c
+    locks.c
+    os_entry.c
+    pthread.c
+
     # portable
     heap_4.c
     port.c
+
+    # kernel
+    devices.cpp
+    driver_impl.cpp
+
+    # kernel/network
+    network.cpp
+    socket.cpp
+
+    # kernel/storage
+    filesystem.cpp
 )
 
 foreach(SRC_FILE ${FreeRTOS_PORT_SRCS})
@@ -23,7 +39,9 @@ foreach(SRC_FILE ${FreeRTOS_PORT_SRCS})
 
     find_file(FreeRTOS_Maix_M1_SRC_FILE ${SRC_FILE}
         PATHS 
+            ${freertos_SOURCE_DIR}
             ${freertos_SOURCE_DIR}/portable
+            ${freertos_SOURCE_DIR}/kernel
 
         CMAKE_FIND_ROOT_PATH_BOTH
     )

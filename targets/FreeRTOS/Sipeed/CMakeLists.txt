@@ -36,87 +36,87 @@ else()
     set(FATFS_VERSION_TAG "${FATFS_VERSION}")
 endif()
 
-if(NO_FATFS_SOURCE)
-    message(STATUS "FatFS ${FATFS_VERSION_TAG} from GitHub repo")
+# if(NO_FATFS_SOURCE)
+#     message(STATUS "FatFS ${FATFS_VERSION_TAG} from GitHub repo")
     
-    FetchContent_Declare(
-        fatfs
-        GIT_REPOSITORY https://github.com/abbrev/fatfs.git
-        GIT_TAG ${FATFS_VERSION_TAG}
-    )
+#     FetchContent_Declare(
+#         fatfs
+#         GIT_REPOSITORY https://github.com/abbrev/fatfs.git
+#         GIT_TAG ${FATFS_VERSION_TAG}
+#     )
 
-else()
-    # FatFS source was specified
+# else()
+#     # FatFS source was specified
 
-    message(STATUS "FatFS ${FATFS_VERSION_TAG} source from: ${FATFS_SOURCE})")
+#     message(STATUS "FatFS ${FATFS_VERSION_TAG} source from: ${FATFS_SOURCE})")
 
-    FetchContent_Declare(
-        fatfs
-        SOURCE_DIR ${FATFS_SOURCE}
-    )
+#     FetchContent_Declare(
+#         fatfs
+#         SOURCE_DIR ${FATFS_SOURCE}
+#     )
 
-endif()
+# endif()
 
-FetchContent_GetProperties(fatfs)
-if(NOT fatfs_POPULATED)
-    # Fetch the content using previously declared details
-    FetchContent_Populate(fatfs)
-endif()
+# FetchContent_GetProperties(fatfs)
+# if(NOT fatfs_POPULATED)
+#     # Fetch the content using previously declared details
+#     FetchContent_Populate(fatfs)
+# endif()
 
-# check if LWIP_SOURCE was specified or if it's empty (default is empty)
-set(NO_LWIP_SOURCE TRUE)
-if(LWIP_SOURCE)
-    if(NOT "${LWIP_SOURCE}" STREQUAL "")
-        set(NO_LWIP_SOURCE FALSE)
-    endif()
-endif()
+# # check if LWIP_SOURCE was specified or if it's empty (default is empty)
+# set(NO_LWIP_SOURCE TRUE)
+# if(LWIP_SOURCE)
+#     if(NOT "${LWIP_SOURCE}" STREQUAL "")
+#         set(NO_LWIP_SOURCE FALSE)
+#     endif()
+# endif()
 
-# LWIP version
-set(LWIP_VERSION_EMPTY TRUE)
+# # LWIP version
+# set(LWIP_VERSION_EMPTY TRUE)
 
-# check if build was requested with a specifc LWIP version
-if(DEFINED LWIP_VERSION)
-    if(NOT "${LWIP_VERSION}" STREQUAL "")
-        set(LWIP_VERSION_EMPTY FALSE)
-    endif()
-endif()
+# # check if build was requested with a specifc LWIP version
+# if(DEFINED LWIP_VERSION)
+#     if(NOT "${LWIP_VERSION}" STREQUAL "")
+#         set(LWIP_VERSION_EMPTY FALSE)
+#     endif()
+# endif()
 
-# check if build was requested with a specifc LWIP version
-if(LWIP_VERSION_EMPTY)
-    # no LWIP version actualy specified, must be empty which is fine, we'll default to a known good version
-    set(LWIP_GIT_TAG "STABLE-2_0_3_RELEASE")
-else()
-    # set Git tag
-    set(LWIP_GIT_TAG "${LWIP_VERSION}")
-endif()            
+# # check if build was requested with a specifc LWIP version
+# if(LWIP_VERSION_EMPTY)
+#     # no LWIP version actualy specified, must be empty which is fine, we'll default to a known good version
+#     set(LWIP_GIT_TAG "STABLE-2_0_3_RELEASE")
+# else()
+#     # set Git tag
+#     set(LWIP_GIT_TAG "${LWIP_VERSION}")
+# endif()            
 
-if(NO_LWIP_SOURCE)
+# if(NO_LWIP_SOURCE)
 
-    message(STATUS "lwIP ${LWIP_GIT_TAG} from savannah.nongnu.org repo")
+#     message(STATUS "lwIP ${LWIP_GIT_TAG} from savannah.nongnu.org repo")
 
-    FetchContent_Declare(
-        lwip
-        GIT_REPOSITORY https://git.savannah.nongnu.org/git/lwip.git
-        GIT_TAG ${LWIP_GIT_TAG}
-    )
+#     FetchContent_Declare(
+#         lwip
+#         GIT_REPOSITORY https://git.savannah.nongnu.org/git/lwip.git
+#         GIT_TAG ${LWIP_GIT_TAG}
+#     )
 
-else()
-    # LWIP source was specified
+# else()
+#     # LWIP source was specified
 
-    message(STATUS "lwIP ${LWIP_GIT_TAG} (source from: ${LWIP_SOURCE})")
+#     message(STATUS "lwIP ${LWIP_GIT_TAG} (source from: ${LWIP_SOURCE})")
 
-    FetchContent_Declare(
-        lwip
-        SOURCE_DIR ${LWIP_SOURCE}
-    )
+#     FetchContent_Declare(
+#         lwip
+#         SOURCE_DIR ${LWIP_SOURCE}
+#     )
 
-endif()
+# endif()
 
-FetchContent_GetProperties(lwip)
-if(NOT lwip_POPULATED)
-    # Fetch the content using previously declared details
-    FetchContent_Populate(lwip)
-endif()
+# FetchContent_GetProperties(lwip)
+# if(NOT lwip_POPULATED)
+#     # Fetch the content using previously declared details
+#     FetchContent_Populate(lwip)
+# endif()
 
 # append FatFS files
 if(USE_FILESYSTEM_OPTION)

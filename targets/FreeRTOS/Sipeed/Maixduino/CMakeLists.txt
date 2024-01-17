@@ -6,6 +6,8 @@
 include(binutils.common)
 include(binutils.FreeRTOS)
 
+include(FreeRTOS_${TARGET_SERIES}_GCC_options)
+
 nf_setup_target_build(
     # HAS_NANOBOOTER
 
@@ -30,7 +32,9 @@ nf_setup_target_build(
     # BOOTER_EXTRA_LIBRARIES
     #    "m;freertos;atomic;bsp;c;stdc++;drivers;posix;hal;"
     CLR_EXTRA_LIBRARIES
+        "-Wl,--start-group"
         "m;freertos;atomic;bsp;c;stdc++;drivers;posix;hal;"
+        "-Wl,--end-group;"
 )
 
 # TODO Enable

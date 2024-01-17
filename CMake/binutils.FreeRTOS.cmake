@@ -50,7 +50,11 @@ macro(nf_add_platform_packages)
     # parse arguments
     cmake_parse_arguments(NFAPP "" "TARGET" "" ${ARGN})
 
-    find_package(FreeRTOS REQUIRED QUIET)
+    
+    if(NOT ${TARGET_BOARD} MATCHES "Maixduino")
+        find_package(FreeRTOS REQUIRED QUIET)
+    endif()
+    
     find_package(CMSIS REQUIRED QUIET)
     
     if(USE_FILESYSTEM_OPTION)
@@ -137,8 +141,6 @@ macro(nf_add_platform_dependencies target)
                     ${CMAKE_CURRENT_BINARY_DIR}
                     ${CMAKE_SOURCE_DIR}/targets/FreeRTOS/Sipeed/_fatfs
                     ${CMAKE_BINARY_DIR}/targets/${RTOS}/${TARGET_BOARD}
-                # EXTRA_LIBRARIES
-                    # "m;freertos;atomic;bsp;c;stdc++;drivers;posix;hal;"
                 )
             
             add_dependencies(${target}.elf nano::NF_NativeAssemblies)
@@ -322,12 +324,8 @@ macro(nf_add_platform_sources target)
             ${TARGET_FREERTOS_COMMON_SOURCES}
             ${TARGET_MAIXDUINO_COMMON_SOURCES}
             
-            # ${FreeRTOS_SOURCES}
+            ${FreeRTOS_SOURCES}
         )
-
-        # link kendryte-freertos-sdk
-        # * add hal
-        # set(NFACS_EXTRA_LIBRARIES m freertos atomic bsp c stdc++ drivers posix hal CACHE INTERNAL "make global")
 
         # sources specific to nanoBooter
         if(${target} STREQUAL ${NANOBOOTER_PROJECT_NAME})

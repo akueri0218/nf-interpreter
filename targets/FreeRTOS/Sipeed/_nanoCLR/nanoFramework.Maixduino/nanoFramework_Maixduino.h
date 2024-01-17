@@ -38,12 +38,40 @@ struct Library_nanoFramework_Maixduino_nanoFramework_Maixduino_Color
     //--//
 };
 
+struct Library_nanoFramework_Maixduino_nanoFramework_Maixduino_KModel
+{
+    static const int FIELD__modelData = 1;
+
+    //--//
+};
+
+struct Library_nanoFramework_Maixduino_nanoFramework_Maixduino_KPU
+{
+    static const int FIELD_STATIC__IsModelLoaded = 19;
+
+    NANOCLR_NATIVE_DECLARE(LoadModel_Native___STATIC__VOID__SZARRAY_U1);
+    NANOCLR_NATIVE_DECLARE(Run_Native___STATIC__SZARRAY_U1__SZARRAY_U1);
+
+    //--//
+};
+
+struct Library_nanoFramework_Maixduino_nanoFramework_Maixduino_KPUImage
+{
+    static const int FIELD__data = 1;
+    static const int FIELD__rgb565Data = 2;
+
+    NANOCLR_NATIVE_DECLARE(LoadKPUImage___STATIC__SZARRAY_U1__I4);
+
+    //--//
+};
+
 struct Library_nanoFramework_Maixduino_nanoFramework_Maixduino_LCD
 {
     NANOCLR_NATIVE_DECLARE(Inittialize___STATIC__VOID);
     NANOCLR_NATIVE_DECLARE(Clear___STATIC__VOID__U2);
     NANOCLR_NATIVE_DECLARE(DrawRect___STATIC__VOID__U2__U2__U2__U2__U2);
     NANOCLR_NATIVE_DECLARE(DrawText_Native___STATIC__VOID__U2__U2__SZARRAY_U1__U2);
+    NANOCLR_NATIVE_DECLARE(DrawPicture___STATIC__VOID__SZARRAY_U1);
 
     //--//
 };

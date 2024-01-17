@@ -10,30 +10,22 @@
 //
 //-----------------------------------------------------------------------------
 
-#ifndef NANOFRAMEWORK_MAIXDUINO_NANOFRAMEWORK_MAIXDUINO_NANOFRAMEWORK_MAIXDUINO_LCD_H
-#define NANOFRAMEWORK_MAIXDUINO_NANOFRAMEWORK_MAIXDUINO_NANOFRAMEWORK_MAIXDUINO_LCD_H
+#ifndef NANOFRAMEWORK_MAIXDUINO_NANOFRAMEWORK_MAIXDUINO_NANOFRAMEWORK_MAIXDUINO_KPUIMAGE_H
+#define NANOFRAMEWORK_MAIXDUINO_NANOFRAMEWORK_MAIXDUINO_NANOFRAMEWORK_MAIXDUINO_KPUIMAGE_H
 
 namespace nanoFramework_Maixduino
 {
     namespace nanoFramework_Maixduino
     {
-        struct LCD
+        struct KPUImage
         {
             // Helper Functions to access fields of managed object
             // Declaration of stubs. These functions are implemented by Interop code developers
 
-            static void Inittialize(  HRESULT &hr );
-
-            static void Clear( uint16_t param0, HRESULT &hr );
-
-            static void DrawRect( uint16_t param0, uint16_t param1, uint16_t param2, uint16_t param3, uint16_t param4, HRESULT &hr );
-
-            static void DrawText_Native( uint16_t param0, uint16_t param1, CLR_RT_TypedArray_UINT8 param2, uint16_t param3, HRESULT &hr );
-
-            static void DrawPicture( CLR_RT_TypedArray_UINT8 param0, HRESULT &hr );
+            static CLR_RT_TypedArray_UINT8 LoadKPUImage( signed int param0, HRESULT &hr );
 
         };
     }
 }
 
-#endif // NANOFRAMEWORK_MAIXDUINO_NANOFRAMEWORK_MAIXDUINO_NANOFRAMEWORK_MAIXDUINO_LCD_H
+#endif // NANOFRAMEWORK_MAIXDUINO_NANOFRAMEWORK_MAIXDUINO_NANOFRAMEWORK_MAIXDUINO_KPUIMAGE_H

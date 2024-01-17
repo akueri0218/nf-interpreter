@@ -60,33 +60,35 @@ if(RTOS_VERSION_EMPTY)
     set(RTOS_VERSION "V10.4.1-kernel-only")
 endif()
 
-if(NO_RTOS_SOURCE_FOLDER)
-    # no FreeRTOS source specified, download it from it's repo
+if(NOT ${TARGET_BOARD} MATCHES "Maixduino")
+    if(NO_RTOS_SOURCE_FOLDER)
+        # no FreeRTOS source specified, download it from it's repo
 
-    message(STATUS "RTOS is: FreeRTOS ${RTOS_VERSION} from GitHub repo")
+        message(STATUS "RTOS is: FreeRTOS ${RTOS_VERSION} from GitHub repo")
 
-    FetchContent_Declare(
-        freertos
-        GIT_REPOSITORY https://github.com/FreeRTOS/FreeRTOS-Kernel.git
-        GIT_TAG ${RTOS_VERSION}
-    )
+        FetchContent_Declare(
+            freertos
+            GIT_REPOSITORY https://github.com/FreeRTOS/FreeRTOS-Kernel.git
+            GIT_TAG ${RTOS_VERSION}
+        )
 
-else()
-    # FreeRTOS source was specified
+    else()
+        # FreeRTOS source was specified
 
-    message(STATUS "RTOS is: FreeRTOS ${RTOS_VERSION} (source from: ${RTOS_SOURCE_FOLDER})")
-    
-    FetchContent_Declare(
-        freertos
-        SOURCE_DIR ${RTOS_SOURCE_FOLDER}
-    )
+        message(STATUS "RTOS is: FreeRTOS ${RTOS_VERSION} (source from: ${RTOS_SOURCE_FOLDER})")
+        
+        FetchContent_Declare(
+            freertos
+            SOURCE_DIR ${RTOS_SOURCE_FOLDER}
+        )
 
-endif()
+    endif()
 
-FetchContent_GetProperties(freertos)
-if(NOT freertos_POPULATED)
-    # Fetch the content using previously declared details
-    FetchContent_Populate(freertos)
+    FetchContent_GetProperties(freertos)
+    if(NOT freertos_POPULATED)
+        # Fetch the content using previously declared details
+        FetchContent_Populate(freertos)
+    endif()
 endif()
 
 # check if CMSIS_SOURCE was specified or if it's empty (default is empty)
