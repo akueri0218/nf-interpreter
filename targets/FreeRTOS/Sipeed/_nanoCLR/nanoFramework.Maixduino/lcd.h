@@ -71,6 +71,8 @@ void lcd_draw_picture(uint16_t x1, uint16_t y1, uint16_t width, uint16_t height,
 void lcd_draw_rectangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t width, uint16_t color);
 void ram_draw_string(char* str, uint32_t* ptr, uint16_t font_color, uint16_t bg_color);
 
+void lcd_draw_picture_safe(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint32_t* ptr);
+
 #ifdef __cplusplus
 }
 #endif

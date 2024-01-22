@@ -7,12 +7,12 @@
 //-----------------------------------------------------------------------------
 
 #include "nanoFramework_Maixduino.h"
-#include "nanoFramework_Maixduino_nanoFramework_Maixduino_KPUImage.h"
+#include "nanoFramework_Maixduino_nanoFramework_Maixduino_KModel.h"
 
 using namespace nanoFramework_Maixduino::nanoFramework_Maixduino;
 
 
-HRESULT Library_nanoFramework_Maixduino_nanoFramework_Maixduino_KPUImage::LoadKPUImage___STATIC__VOID__U4__SZARRAY_U1( CLR_RT_StackFrame& stack )
+HRESULT Library_nanoFramework_Maixduino_nanoFramework_Maixduino_KModel::LoadKModel___STATIC__VOID__U4__SZARRAY_U1( CLR_RT_StackFrame& stack )
 {
     NANOCLR_HEADER(); hr = S_OK;
     {
@@ -23,7 +23,7 @@ HRESULT Library_nanoFramework_Maixduino_nanoFramework_Maixduino_KPUImage::LoadKP
         CLR_RT_TypedArray_UINT8 param1;
         NANOCLR_CHECK_HRESULT( Interop_Marshal_UINT8_ARRAY( stack, 1, param1 ) );
 
-        KPUImage::LoadKPUImage( param0, param1, hr );
+        KModel::LoadKModel( param0, param1, hr );
         NANOCLR_CHECK_HRESULT( hr );
 
     }

@@ -40,17 +40,10 @@ struct Library_nanoFramework_Maixduino_nanoFramework_Maixduino_Color
 
 struct Library_nanoFramework_Maixduino_nanoFramework_Maixduino_KModel
 {
-    static const int FIELD__modelData = 1;
+    static const int FIELD___modelData = 1;
+    static const int FIELD___outputSize = 2;
 
-    //--//
-};
-
-struct Library_nanoFramework_Maixduino_nanoFramework_Maixduino_KPU
-{
-    static const int FIELD_STATIC__IsModelLoaded = 19;
-
-    NANOCLR_NATIVE_DECLARE(LoadModel_Native___STATIC__VOID__SZARRAY_U1);
-    NANOCLR_NATIVE_DECLARE(Run_Native___STATIC__SZARRAY_U1__SZARRAY_U1);
+    NANOCLR_NATIVE_DECLARE(LoadKModel___STATIC__VOID__U4__SZARRAY_U1);
 
     //--//
 };
@@ -60,7 +53,29 @@ struct Library_nanoFramework_Maixduino_nanoFramework_Maixduino_KPUImage
     static const int FIELD__data = 1;
     static const int FIELD__rgb565Data = 2;
 
-    NANOCLR_NATIVE_DECLARE(LoadKPUImage___STATIC__SZARRAY_U1__I4);
+    NANOCLR_NATIVE_DECLARE(LoadKPUImage___STATIC__VOID__U4__SZARRAY_U1);
+
+    //--//
+};
+
+struct Library_nanoFramework_Maixduino_nanoFramework_Maixduino_KPU
+{
+    static const int FIELD_STATIC__FaceDetectModel = 19;
+    static const int FIELD_STATIC___model = 20;
+
+    NANOCLR_NATIVE_DECLARE(FaceDetect_Native___STATIC__U4__SZARRAY_U1__SZARRAY_U4);
+    NANOCLR_NATIVE_DECLARE(LoadModel_Native___STATIC__VOID__SZARRAY_U1);
+    NANOCLR_NATIVE_DECLARE(Run_Native___STATIC__VOID__SZARRAY_U1__SZARRAY_U1);
+
+    //--//
+};
+
+struct Library_nanoFramework_Maixduino_nanoFramework_Maixduino_KPU__FaceDetectInfo
+{
+    static const int FIELD__x1 = 1;
+    static const int FIELD__y1 = 2;
+    static const int FIELD__x2 = 3;
+    static const int FIELD__y2 = 4;
 
     //--//
 };

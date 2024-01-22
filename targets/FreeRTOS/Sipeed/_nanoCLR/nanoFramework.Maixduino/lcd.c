@@ -42,7 +42,7 @@ void lcd_init(void)
     tft_write_command(PIXEL_FORMAT_SET);
     data = 0x55;
     tft_write_byte(&data, 1);
-    lcd_set_direction(DIR_YX_RLDU); // horizontal: DIR_XY_RLUD, vertical: DIR_YX_RLDU
+    lcd_set_direction(DIR_YX_LRUD); // horizontal: DIR_XY_RLUD, vertical: DIR_YX_RLDU
     tft_write_command(DISPALY_ON);
 }
 
@@ -193,4 +193,27 @@ void lcd_draw_picture(uint16_t x1, uint16_t y1, uint16_t width, uint16_t height,
 {
     lcd_set_area(x1, y1, x1 + width - 1, y1 + height - 1);
     tft_write_word(ptr, width * height / 2);
+}
+
+#define SPI_TH (0x800 - 1)
+
+void lcd_draw_picture_safe(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint32_t* ptr)
+{
+    if(width * height <= SPI_TH / 2)
+    {
+        lcd_draw_picture(x, y, width, height, ptr);
+        return;
+    }
+    else
+    {
+        uint16_t h = (SPI_TH / 2) / width;
+
+        lcd_draw_picture(x, y, width, h, ptr);
+
+        y += h;
+        ptr += h * width / 2;
+        height -= h;
+
+        lcd_draw_picture_safe(x, y, width, height, ptr);
+    }
 }

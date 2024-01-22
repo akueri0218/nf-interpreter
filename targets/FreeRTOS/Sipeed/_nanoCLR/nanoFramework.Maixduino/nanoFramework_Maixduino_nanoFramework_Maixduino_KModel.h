@@ -10,26 +10,22 @@
 //
 //-----------------------------------------------------------------------------
 
-#ifndef NANOFRAMEWORK_MAIXDUINO_NANOFRAMEWORK_MAIXDUINO_NANOFRAMEWORK_MAIXDUINO_KPU_H
-#define NANOFRAMEWORK_MAIXDUINO_NANOFRAMEWORK_MAIXDUINO_NANOFRAMEWORK_MAIXDUINO_KPU_H
+#ifndef NANOFRAMEWORK_MAIXDUINO_NANOFRAMEWORK_MAIXDUINO_NANOFRAMEWORK_MAIXDUINO_KMODEL_H
+#define NANOFRAMEWORK_MAIXDUINO_NANOFRAMEWORK_MAIXDUINO_NANOFRAMEWORK_MAIXDUINO_KMODEL_H
 
 namespace nanoFramework_Maixduino
 {
     namespace nanoFramework_Maixduino
     {
-        struct KPU
+        struct KModel
         {
             // Helper Functions to access fields of managed object
             // Declaration of stubs. These functions are implemented by Interop code developers
 
-            static unsigned int FaceDetect_Native( CLR_RT_TypedArray_UINT8 param0, CLR_RT_TypedArray_UINT32 param1, HRESULT &hr );
-
-            static void LoadModel_Native( CLR_RT_TypedArray_UINT8 param0, HRESULT &hr );
-
-            static void Run_Native( CLR_RT_TypedArray_UINT8 param0, CLR_RT_TypedArray_UINT8 param1, HRESULT &hr );
+            static void LoadKModel( unsigned int param0, CLR_RT_TypedArray_UINT8 param1, HRESULT &hr );
 
         };
     }
 }
 
-#endif // NANOFRAMEWORK_MAIXDUINO_NANOFRAMEWORK_MAIXDUINO_NANOFRAMEWORK_MAIXDUINO_KPU_H
+#endif // NANOFRAMEWORK_MAIXDUINO_NANOFRAMEWORK_MAIXDUINO_NANOFRAMEWORK_MAIXDUINO_KMODEL_H

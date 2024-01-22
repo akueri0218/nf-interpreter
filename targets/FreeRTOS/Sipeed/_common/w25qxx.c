@@ -485,3 +485,22 @@ enum w25qxx_status_t w25qxx_set_default_xip(uint8_t en)
     return W25QXX_OK;
 }
 
+#define SPI_TH (0x800 - 1)
+
+void w25qxx_read_data_safe(uint32_t addr, uint8_t* data_buf, uint32_t length)
+{
+    if(length <= SPI_TH)
+    {
+        w25qxx_read_data(addr, data_buf, length);
+        return;
+    }
+    else
+    {
+        w25qxx_read_data(addr, data_buf, SPI_TH);
+        addr += SPI_TH;
+        data_buf += SPI_TH;
+        length -= SPI_TH;
+
+        w25qxx_read_data_safe(addr, data_buf, length);
+    }
+}

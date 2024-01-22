@@ -78,6 +78,10 @@ enum w25qxx_status_t
     W25QXX_ERROR,
 };
 
+#ifdef __cplusplus
+ extern "C" {
+#endif
+
 enum w25qxx_status_t w25qxx_init(uintptr_t spi_in);
 enum w25qxx_status_t w25qxx_write_data(uint32_t addr, uint8_t* data_buf, uint32_t length);
 enum w25qxx_status_t w25qxx_read_data(uint32_t addr, uint8_t* data_buf, uint32_t length);
@@ -90,6 +94,13 @@ enum w25qxx_status_t w25qxx_enable_xip();
 enum w25qxx_status_t w25qxx_disable_xip();
 enum w25qxx_status_t w25qxx_reset_xip();
 enum w25qxx_status_t w25qxx_set_default_xip(uint8_t en);
+
+/* read data without DMA */
+void w25qxx_read_data_safe(uint32_t addr, uint8_t* data_buf, uint32_t length);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 

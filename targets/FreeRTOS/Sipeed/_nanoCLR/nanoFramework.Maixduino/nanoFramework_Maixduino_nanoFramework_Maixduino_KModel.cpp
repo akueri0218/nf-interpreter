@@ -11,27 +11,30 @@
 //-----------------------------------------------------------------------------
 
 #include "nanoFramework_Maixduino.h"
-#include "nanoFramework_Maixduino_nanoFramework_Maixduino_KPUImage.h"
+#include "nanoFramework_Maixduino_nanoFramework_Maixduino_KModel.h"
 
+#include <stdio.h>
 #include "w25qxx.h"
 
 using namespace nanoFramework_Maixduino::nanoFramework_Maixduino;
 
 
-void KPUImage::LoadKPUImage( unsigned int param0, CLR_RT_TypedArray_UINT8 param1, HRESULT &hr )
+void KModel::LoadKModel( unsigned int param0, CLR_RT_TypedArray_UINT8 param1, HRESULT &hr )
 {
 
-    (void)param0;
-    (void)param1;
+    (void)param0; // address
+    (void)param1; // model data
     (void)hr;
 
 
     ////////////////////////////////
     // implementation starts here //
 
-    printf("load kpu image\n");
+    printf("kmodel load address: 0x%X\n", param0);
 
-    w25qxx_read_data_safe(param0, param1.GetBuffer(), 320 * 240 * 3);
+    int size = param1.GetSize();
+
+    w25qxx_read_data_safe(param0, param1.GetBuffer(), size);
 
     // implementation ends here   //
     ////////////////////////////////

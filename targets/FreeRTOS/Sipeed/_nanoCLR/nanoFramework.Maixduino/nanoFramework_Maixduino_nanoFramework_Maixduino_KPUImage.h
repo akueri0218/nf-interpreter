@@ -22,7 +22,7 @@ namespace nanoFramework_Maixduino
             // Helper Functions to access fields of managed object
             // Declaration of stubs. These functions are implemented by Interop code developers
 
-            static CLR_RT_TypedArray_UINT8 LoadKPUImage( signed int param0, HRESULT &hr );
+            static void LoadKPUImage( unsigned int param0, CLR_RT_TypedArray_UINT8 param1, HRESULT &hr );
 
         };
     }

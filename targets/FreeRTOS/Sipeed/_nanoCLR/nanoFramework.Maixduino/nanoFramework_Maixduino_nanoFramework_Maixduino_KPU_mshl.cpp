@@ -12,6 +12,24 @@
 using namespace nanoFramework_Maixduino::nanoFramework_Maixduino;
 
 
+HRESULT Library_nanoFramework_Maixduino_nanoFramework_Maixduino_KPU::FaceDetect_Native___STATIC__U4__SZARRAY_U1__SZARRAY_U4( CLR_RT_StackFrame& stack )
+{
+    NANOCLR_HEADER(); hr = S_OK;
+    {
+
+        CLR_RT_TypedArray_UINT8 param0;
+        NANOCLR_CHECK_HRESULT( Interop_Marshal_UINT8_ARRAY( stack, 0, param0 ) );
+
+        CLR_RT_TypedArray_UINT32 param1;
+        NANOCLR_CHECK_HRESULT( Interop_Marshal_UINT32_ARRAY( stack, 1, param1 ) );
+
+        unsigned int retValue = KPU::FaceDetect_Native( param0, param1, hr );
+        NANOCLR_CHECK_HRESULT( hr );
+        SetResult_UINT32( stack, retValue );
+    }
+    NANOCLR_NOCLEANUP();
+}
+
 HRESULT Library_nanoFramework_Maixduino_nanoFramework_Maixduino_KPU::LoadModel_Native___STATIC__VOID__SZARRAY_U1( CLR_RT_StackFrame& stack )
 {
     NANOCLR_HEADER(); hr = S_OK;
@@ -27,7 +45,7 @@ HRESULT Library_nanoFramework_Maixduino_nanoFramework_Maixduino_KPU::LoadModel_N
     NANOCLR_NOCLEANUP();
 }
 
-HRESULT Library_nanoFramework_Maixduino_nanoFramework_Maixduino_KPU::Run_Native___STATIC__SZARRAY_U1__SZARRAY_U1( CLR_RT_StackFrame& stack )
+HRESULT Library_nanoFramework_Maixduino_nanoFramework_Maixduino_KPU::Run_Native___STATIC__VOID__SZARRAY_U1__SZARRAY_U1( CLR_RT_StackFrame& stack )
 {
     NANOCLR_HEADER(); hr = S_OK;
     {
@@ -35,9 +53,12 @@ HRESULT Library_nanoFramework_Maixduino_nanoFramework_Maixduino_KPU::Run_Native_
         CLR_RT_TypedArray_UINT8 param0;
         NANOCLR_CHECK_HRESULT( Interop_Marshal_UINT8_ARRAY( stack, 0, param0 ) );
 
-        CLR_RT_TypedArray_UINT8 retValue = KPU::Run_Native( param0, hr );
+        CLR_RT_TypedArray_UINT8 param1;
+        NANOCLR_CHECK_HRESULT( Interop_Marshal_UINT8_ARRAY( stack, 1, param1 ) );
+
+        KPU::Run_Native( param0, param1, hr );
         NANOCLR_CHECK_HRESULT( hr );
-        SetResult_UINT8_ARRAY( stack, retValue );
+
     }
     NANOCLR_NOCLEANUP();
 }
