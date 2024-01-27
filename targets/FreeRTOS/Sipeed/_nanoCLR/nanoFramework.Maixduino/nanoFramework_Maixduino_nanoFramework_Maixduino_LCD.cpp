@@ -73,11 +73,11 @@ void LCD::DrawRect( uint16_t param0, uint16_t param1, uint16_t param2, uint16_t 
 
     printf("lcd_draw_rectangle x1: %d, y1: %d, x2: %d, y2: %d, color: 0x%04X\n", param0, param1, param2, param3, param4);
 
-    if(param2 > LCD_Y_MAX)
+    if(param2 >= LCD_Y_MAX)
     {
         param2 = LCD_Y_MAX - 1;
     }
-    if(param3 > LCD_X_MAX)
+    if(param3 >= LCD_X_MAX)
     {
         param3 = LCD_X_MAX - 1;
     }

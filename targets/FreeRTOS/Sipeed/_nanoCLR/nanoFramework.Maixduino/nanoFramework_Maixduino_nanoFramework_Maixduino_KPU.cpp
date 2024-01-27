@@ -43,12 +43,8 @@ unsigned int KPU::FaceDetect_Native( CLR_RT_TypedArray_UINT8 param0, CLR_RT_Type
     face_detect_rl.threshold = 0.7;
     face_detect_rl.nms_value = 0.3;
     region_layer_init(&face_detect_rl, 20, 15, 30, 320, 240);
-
-    float* buf = (float*)platform_malloc(param0.GetSize());
-
-    memcpy(buf, param0.GetBuffer(), param0.GetSize());
-
-    face_detect_rl.input = buf;
+    
+    face_detect_rl.input = (float*)param0.GetBuffer();
     
     region_layer_run(&face_detect_rl, &face_detect_info);
 

@@ -998,6 +998,7 @@ void sys::kernel_iface_pic_on_irq(uint32_t irq)
 
 /* DMA */
 
+// BUG: cannot use multiple dma channels
 handle_t dma_open_free()
 {
     _lock_acquire_recursive(&dma_lock);
@@ -1011,8 +1012,6 @@ handle_t dma_open_free()
         try
         {
             dma = make_accessor(driver);
-            // TODO remove debug
-            printf("open \"%s\"\n", head->name);
             break;
         }
         catch (...)

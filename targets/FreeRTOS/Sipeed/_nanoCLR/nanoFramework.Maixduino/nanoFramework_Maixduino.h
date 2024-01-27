@@ -51,7 +51,7 @@ struct Library_nanoFramework_Maixduino_nanoFramework_Maixduino_KModel
 struct Library_nanoFramework_Maixduino_nanoFramework_Maixduino_KPUImage
 {
     static const int FIELD__data = 1;
-    static const int FIELD__rgb565Data = 2;
+    static const int FIELD__previewData = 2;
 
     NANOCLR_NATIVE_DECLARE(LoadKPUImage___STATIC__VOID__U4__SZARRAY_U1);
 
